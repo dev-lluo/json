@@ -1,9 +1,9 @@
-package top.flyfire.json.deserialize;
+package top.flyfire.json.component;
 
 /**
  * Created by devll on 2016/10/18.
  */
-public interface DeserializeTrigger {
+public interface JsonComponent<T> {
 
     /**
      * json newStruct
@@ -15,7 +15,8 @@ public interface DeserializeTrigger {
 
     void indexing(Object index,int level);
 
-    void rawValue(String value,int level);
+    void value(String value, int level);
 
+    T storage();
 
 }

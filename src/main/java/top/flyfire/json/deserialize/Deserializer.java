@@ -3,6 +3,7 @@ package top.flyfire.json.deserialize;
 import top.flyfire.json.Parser;
 import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
+import top.flyfire.json.component.JsonComponent;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -12,7 +13,7 @@ public class Deserializer implements Peeker {
 
     private String source;
 
-    private DeserializeTrigger trigger;
+    private JsonComponent component;
 
     private int cursor,cursorBound,level;
 
@@ -22,19 +23,20 @@ public class Deserializer implements Peeker {
 
     private Parser PRIMITIVEPARSER;
 
-    public Deserializer(String source, DeserializeTrigger trigger) {
+    public Deserializer(String source, JsonComponent component) {
         super();
         this.source = source;
         this.cursor = this.level = 0;
         this.cursorBound = source.length();
-        this.trigger = trigger;
+        this.component = component;
         STRUCTEDPARSER = new ObjectParser();
         INDEXEDPARSER = new ArrayParser();
         PRIMITIVEPARSER = new PrimitiveParser();
     }
 
-    public void deserialize() {
+    public Object deserialize() {
         peek().parse();
+        return component.storage();
     }
 
 
@@ -43,11 +45,11 @@ public class Deserializer implements Peeker {
         char dest = fetch();
         if(Tokenizer.isArrayStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            trigger.newStruct(0,level++);
+            component.newStruct(0,level++);
             return INDEXEDPARSER;
         }else if(Tokenizer.isObjectStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            trigger.newStruct(1,level++);
+            component.newStruct(1,level++);
             return STRUCTEDPARSER;
         }else{
             return PRIMITIVEPARSER;
@@ -85,7 +87,7 @@ public class Deserializer implements Peeker {
                             }
                         }
                         String property = source.substring(start,end);
-                        trigger.indexing(property,level);
+                        component.indexing(property,level);
                     }
 
                     value : {
@@ -99,7 +101,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            trigger.endStruct(1,--level);
+            component.endStruct(1,--level);
         }
 
         @Override
@@ -131,11 +133,11 @@ public class Deserializer implements Peeker {
             char dest;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                trigger.newStruct(0,level++);
+                component.newStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                trigger.newStruct(1,level++);
+                component.newStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
@@ -158,7 +160,7 @@ public class Deserializer implements Peeker {
                 int i = 0;
                 do{
                     index : {
-                        trigger.indexing(i++,level);
+                        component.indexing(i++,level);
                     }
                     value : {
                         peek().parse();
@@ -171,7 +173,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            trigger.endStruct(0,--level);
+            component.endStruct(0,--level);
         }
 
         @Override
@@ -203,11 +205,11 @@ public class Deserializer implements Peeker {
             char dest ;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                trigger.newStruct(0,level++);
+                component.newStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                trigger.newStruct(1,level++);
+                component.newStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
@@ -218,7 +220,7 @@ public class Deserializer implements Peeker {
     private class PrimitiveParser implements Parser {
         @Override
         public void parse() {
-            trigger.rawValue(source,level);
+            component.value(source,level);
         }
     }
 
@@ -233,7 +235,7 @@ public class Deserializer implements Peeker {
                     break;
                 }
             }
-            trigger.rawValue(source.substring(start, end),level);
+            component.value(source.substring(start, end),level);
         }
     }
 
@@ -247,7 +249,7 @@ public class Deserializer implements Peeker {
                     break;
                 }
             }
-            trigger.rawValue(source.substring(start, end),level);
+            component.value(source.substring(start, end),level);
         }
     }
 
