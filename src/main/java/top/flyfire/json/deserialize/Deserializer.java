@@ -3,8 +3,6 @@ package top.flyfire.json.deserialize;
 import top.flyfire.json.Parser;
 import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
-import top.flyfire.json.deserialize.data.*;
-import top.flyfire.json.deserialize.value.PrimitiveModel;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -14,11 +12,9 @@ public class Deserializer implements Peeker {
 
     private String source;
 
-    private int cursor,cursorBound;
+    private DeserializeTrigger trigger;
 
-    private DataFactory dataFactory;
-
-    private Data data;
+    private int cursor,cursorBound,level;
 
     private Parser STRUCTEDPARSER;
 
@@ -26,24 +22,19 @@ public class Deserializer implements Peeker {
 
     private Parser PRIMITIVEPARSER;
 
-    public Deserializer(String source, DataFactory dataFactory) {
+    public Deserializer(String source, DeserializeTrigger trigger) {
         super();
         this.source = source;
-        this.cursor = 0;
+        this.cursor = this.level = 0;
         this.cursorBound = source.length();
-        this.dataFactory = dataFactory;
+        this.trigger = trigger;
         STRUCTEDPARSER = new ObjectParser();
         INDEXEDPARSER = new ArrayParser();
         PRIMITIVEPARSER = new PrimitiveParser();
     }
 
-    public Deserializer(String source, DataFactory dataFactory,Data data){
-
-    }
-
-    public Object deserialize() {
+    public void deserialize() {
         peek().parse();
-        return data.flush();
     }
 
 
@@ -52,14 +43,13 @@ public class Deserializer implements Peeker {
         char dest = fetch();
         if(Tokenizer.isArrayStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            data = dataFactory.buildAsIndexed(data);
+            trigger.newStruct(0,level++);
             return INDEXEDPARSER;
         }else if(Tokenizer.isObjectStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            data =dataFactory.buildAsStructed(data);
+            trigger.newStruct(1,level++);
             return STRUCTEDPARSER;
         }else{
-            data = dataFactory.buildAsPrimitive(data);
             return PRIMITIVEPARSER;
         }
     }
@@ -70,10 +60,6 @@ public class Deserializer implements Peeker {
 
     private boolean roll(){
         return ++cursor<cursorBound;
-    }
-
-    private void dataFlush(){
-        data = data.flush2Parent();
     }
 
     private class ObjectParser implements Parser ,Structure,Peeker {
@@ -99,12 +85,11 @@ public class Deserializer implements Peeker {
                             }
                         }
                         String property = source.substring(start,end);
-                        data.setExtra(property);
+                        trigger.indexing(property,level);
                     }
 
                     value : {
                         peek().parse();
-                        dataFlush();
                     }
 
                 }while(hasNext());
@@ -114,7 +99,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-
+            trigger.endStruct(1,--level);
         }
 
         @Override
@@ -146,14 +131,13 @@ public class Deserializer implements Peeker {
             char dest;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                data = dataFactory.buildAsIndexed(data);;
+                trigger.newStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                data = dataFactory.buildAsStructed(data);
+                trigger.newStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
-                data = dataFactory.buildAsPrimitive(data);
                 return PRIMITIVEPARSER;
             }
         }
@@ -174,11 +158,10 @@ public class Deserializer implements Peeker {
                 int i = 0;
                 do{
                     index : {
-                        data.setExtra(i++);
+                        trigger.indexing(i++,level);
                     }
                     value : {
                         peek().parse();
-                        dataFlush();
                     }
                 }while(hasNext());
             }
@@ -188,7 +171,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-
+            trigger.endStruct(0,--level);
         }
 
         @Override
@@ -220,14 +203,13 @@ public class Deserializer implements Peeker {
             char dest ;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                data = dataFactory.buildAsIndexed(data);;
+                trigger.newStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                data = dataFactory.buildAsStructed(data);
+                trigger.newStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
-                data = dataFactory.buildAsPrimitive(data);
                 return PRIMITIVEPARSER;
             }
         }
@@ -236,8 +218,7 @@ public class Deserializer implements Peeker {
     private class PrimitiveParser implements Parser {
         @Override
         public void parse() {
-            data.setExtra(Object.class);
-            data.set(new PrimitiveModel(source).val());
+            trigger.rawValue(source,level);
         }
     }
 
@@ -252,8 +233,7 @@ public class Deserializer implements Peeker {
                     break;
                 }
             }
-            data.setExtra(Object.class);
-            data.set(new PrimitiveModel(source.substring(start, end)).val());
+            trigger.rawValue(source.substring(start, end),level);
         }
     }
 
@@ -267,8 +247,7 @@ public class Deserializer implements Peeker {
                     break;
                 }
             }
-            data.setExtra(Object.class);
-            data.set(new PrimitiveModel(source.substring(start, end)).val());
+            trigger.rawValue(source.substring(start, end),level);
         }
     }
 
