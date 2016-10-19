@@ -44,11 +44,11 @@ public class Deserializer implements Peeker {
         char dest = fetch();
         if(Tokenizer.isArrayStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.openStruct(0,level++);
+            component.openArray(level++);
             return INDEXEDPARSER;
         }else if(Tokenizer.isObjectStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.openStruct(1,level++);
+            component.openObject(level++);
             return STRUCTEDPARSER;
         }else{
             return PRIMITIVEPARSER;
@@ -100,7 +100,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            component.closeStruct(1,--level);
+            component.closeObject(--level);
         }
 
         @Override
@@ -132,11 +132,11 @@ public class Deserializer implements Peeker {
             char dest;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                component.openStruct(0,level++);
+                component.openArray(level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.openStruct(1,level++);
+                component.openObject(level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
@@ -172,7 +172,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            component.closeStruct(0,--level);
+            component.closeArray(--level);
         }
 
         @Override
@@ -204,11 +204,11 @@ public class Deserializer implements Peeker {
             char dest ;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                component.openStruct(0,level++);
+                component.openArray(level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.openStruct(1,level++);
+                component.openObject(level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;

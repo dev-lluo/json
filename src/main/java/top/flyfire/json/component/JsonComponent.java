@@ -5,9 +5,13 @@ package top.flyfire.json.component;
  */
 public interface JsonComponent {
 
-    void openStruct(int type, int level);
+    void openArray(int level);
 
-    void closeStruct(int type, int level);
+    void closeArray(int level);
+
+    void openObject(int level);
+
+    void closeObject(int level);
 
     void indexing(Object index,int level);
 

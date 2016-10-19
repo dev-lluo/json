@@ -10,24 +10,29 @@ public class FormatCpt implements JsonComponent {
     StringBuilder builder = new StringBuilder();
 
     @Override
-    public void openStruct(int type, int level) {
-        if(type==0){
-            builder.append("[").append("\r\n");
-        }else{
-            builder.append("{").append("\r\n");
-        }
+    public void openArray(int level) {
+        builder.append("[").append("\r\n");
     }
 
     @Override
-    public void closeStruct(int type, int level) {
+    public void closeArray(int level) {
         for(int i = 0;i<level;i++){
             builder.append("\t");
         }
-        if(type==0){
-            builder.append("]").append("\r\n");
-        }else{
-            builder.append("}").append("\r\n");
+        builder.append("]").append("\r\n");
+    }
+
+    @Override
+    public void openObject(int level) {
+        builder.append("{").append("\r\n");
+    }
+
+    @Override
+    public void closeObject(int level) {
+        for(int i = 0;i<level;i++){
+            builder.append("\t");
         }
+        builder.append("}").append("\r\n");
     }
 
     @Override
