@@ -10,11 +10,13 @@ import top.flyfire.json.deserialize.Deserializer;
 public class Json {
 
     public static String format(String json){
-       return (String)new Deserializer(json,new FormatCpt()).deserialize();
+        FormatCpt formatCpt = new FormatCpt();
+        new Deserializer(json,formatCpt).deserialize();
+        return formatCpt.result();
     }
 
-    public static <T> T exec(String json, JsonComponent<T> component){
-        return (T)new Deserializer(json,component).deserialize();
+    public static void exec(String json, JsonComponent component){
+        new Deserializer(json,component).deserialize();
     }
 
 }

@@ -5,12 +5,12 @@ import top.flyfire.json.component.JsonComponent;
 /**
  * Created by devll on 2016/10/18.
  */
-public class FormatCpt implements JsonComponent<String> {
+public class FormatCpt implements JsonComponent {
 
     StringBuilder builder = new StringBuilder();
 
     @Override
-    public void newStruct(int type, int level) {
+    public void openStruct(int type, int level) {
         if(type==0){
             builder.append("[").append("\r\n");
         }else{
@@ -19,7 +19,7 @@ public class FormatCpt implements JsonComponent<String> {
     }
 
     @Override
-    public void endStruct(int type, int level) {
+    public void closeStruct(int type, int level) {
         for(int i = 0;i<level;i++){
             builder.append("\t");
         }
@@ -43,8 +43,7 @@ public class FormatCpt implements JsonComponent<String> {
         builder.append(value).append("\r\n");
     }
 
-    @Override
-    public String storage() {
+    public String result() {
         return builder.toString();
     }
 }

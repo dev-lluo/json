@@ -34,9 +34,8 @@ public class Deserializer implements Peeker {
         PRIMITIVEPARSER = new PrimitiveParser();
     }
 
-    public Object deserialize() {
+    public void deserialize() {
         peek().parse();
-        return component.storage();
     }
 
 
@@ -45,11 +44,11 @@ public class Deserializer implements Peeker {
         char dest = fetch();
         if(Tokenizer.isArrayStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.newStruct(0,level++);
+            component.openStruct(0,level++);
             return INDEXEDPARSER;
         }else if(Tokenizer.isObjectStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.newStruct(1,level++);
+            component.openStruct(1,level++);
             return STRUCTEDPARSER;
         }else{
             return PRIMITIVEPARSER;
@@ -101,7 +100,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            component.endStruct(1,--level);
+            component.closeStruct(1,--level);
         }
 
         @Override
@@ -133,11 +132,11 @@ public class Deserializer implements Peeker {
             char dest;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                component.newStruct(0,level++);
+                component.openStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.newStruct(1,level++);
+                component.openStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
@@ -173,7 +172,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public void validateAndEnd() {
-            component.endStruct(0,--level);
+            component.closeStruct(0,--level);
         }
 
         @Override
@@ -205,11 +204,11 @@ public class Deserializer implements Peeker {
             char dest ;
             if(Tokenizer.isArrayStart(dest = fetch())){
                 if(!roll()) throw new RuntimeException(source);
-                component.newStruct(0,level++);
+                component.openStruct(0,level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.newStruct(1,level++);
+                component.openStruct(1,level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
