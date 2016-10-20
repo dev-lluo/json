@@ -1,4 +1,4 @@
-package top.flyfire.json.component.defaults;
+package top.flyfire.json.component.defaults.format;
 
 import top.flyfire.json.component.JsonComponent;
 
@@ -16,10 +16,11 @@ public class FormatCpt implements JsonComponent {
 
     @Override
     public void closeArray(int level) {
+        builder.append("\r\n");
         for(int i = 0;i<level;i++){
             builder.append("\t");
         }
-        builder.append("]").append("\r\n");
+        builder.append("]");
     }
 
     @Override
@@ -29,10 +30,11 @@ public class FormatCpt implements JsonComponent {
 
     @Override
     public void closeObject(int level) {
+        builder.append("\r\n");
         for(int i = 0;i<level;i++){
             builder.append("\t");
         }
-        builder.append("}").append("\r\n");
+        builder.append("}");
     }
 
     @Override
@@ -45,7 +47,12 @@ public class FormatCpt implements JsonComponent {
 
     @Override
     public void value(String value, int level) {
-        builder.append(value).append("\r\n");
+        builder.append(value);
+    }
+
+    @Override
+    public void toNext(int level) {
+        builder.append(" , ").append("\r\n");
     }
 
     public String result() {

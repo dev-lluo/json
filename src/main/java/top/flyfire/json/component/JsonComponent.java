@@ -17,4 +17,6 @@ public interface JsonComponent {
 
     void value(String value, int level);
 
+    void toNext(int level);
+
 }

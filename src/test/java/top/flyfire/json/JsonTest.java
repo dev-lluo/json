@@ -9,7 +9,7 @@ public class JsonTest {
 
     @Test
     public void testFormat() throws Exception {
-        String json = Json.format("{a:123,b:\"123\",c:\"2015-12-12 12:12:12\",d:[1,2,3],}");
+        String json = Json.format("   {a:   123       ,  \" b\" :    \"123\"\r\n,  c:  \"2015-12-12 12:12:12\"  ,   d    :  [1,2,3  , [ 4,5]]  ,e:456}");
         System.out.println(json);
     }
 

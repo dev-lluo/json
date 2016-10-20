@@ -1,7 +1,7 @@
 package top.flyfire.json;
 
 import top.flyfire.json.component.JsonComponent;
-import top.flyfire.json.component.defaults.FormatCpt;
+import top.flyfire.json.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.Deserializer;
 
 /**

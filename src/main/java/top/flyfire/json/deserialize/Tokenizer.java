@@ -31,7 +31,7 @@ public final class Tokenizer implements Token {
         return STC_K2V == token;
     }
 
-    public static boolean isNPChar(char token){
+    public static boolean isInvisibleChar(char token){
         return SPACE == token || TAB == token || RLINE == token || NLINE == token;
     }
 

@@ -1,4 +1,4 @@
-package top.flyfire.json.component.defaults;
+package top.flyfire.json.component.defaults.parse;
 
 import top.flyfire.json.component.JsonComponent;
 
@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Created by devll on 2016/10/19.
  */
-public class AsJavaObjectCpt implements JsonComponent {
+public class ParseJavaObjectCpt implements JsonComponent {
 
     @Override
     public void openArray(int level) {
@@ -40,4 +40,8 @@ public class AsJavaObjectCpt implements JsonComponent {
 
     }
 
+    @Override
+    public void toNext(int level) {
+
+    }
 }
