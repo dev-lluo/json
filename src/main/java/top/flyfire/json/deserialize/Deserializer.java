@@ -89,13 +89,6 @@ public class Deserializer implements Peeker {
 
                     key : {
                         fetchIgnoreisInvisibleChar();
-//                        int start = cursor;
-//                        int end = -1;
-//                        while(roll()&&end==-1){
-//                            if(Tokenizer.isPrp2Val(fetch())){
-//                                end = cursor;
-//                            }
-//                        }
                         int start = cursor, end = -1;char dest,struct = ((struct = fetch())== Token.D_QUOTE||struct==Token.S_QUOTE)?struct:Token.EMPTY;
                         //single quote and double quote
                         while(roll()&&struct!=Token.EMPTY){
