@@ -104,6 +104,9 @@ public class Deserializer implements Peeker {
                             while (!Tokenizer.isPrp2Val(dest = fetch())) {
                                 if (!roll())throw new RuntimeException(source);
                             }
+                            //trim quote
+                            start = start+1;
+                            end = end-1;
                         }else{
                             //non single/double quote read
                             while (!Tokenizer.isPrp2Val(dest = fetch())) {
@@ -278,6 +281,9 @@ public class Deserializer implements Peeker {
                 while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isObjectEnd(dest)) {
                     if (!roll())throw new RuntimeException(source);
                 }
+                //trim quote
+                start = start+1;
+                end = end-1;
             }else{
                 //non single/double quote read
                 while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isObjectEnd(dest)) {
@@ -314,6 +320,9 @@ public class Deserializer implements Peeker {
                 while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isArrayEnd(dest)) {
                     if (!roll())throw new RuntimeException(source);
                 }
+                //trim quote
+                start = start+1;
+                end = end-1;
             }else{
                 //non single/double quote read
                 while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isArrayEnd(dest)) {
