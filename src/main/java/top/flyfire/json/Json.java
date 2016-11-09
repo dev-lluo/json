@@ -1,8 +1,13 @@
 package top.flyfire.json;
 
+import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.component.JsonComponent;
 import top.flyfire.json.component.defaults.format.FormatCpt;
+import top.flyfire.json.component.defaults.highparse.HighParseJavaObjectCpt;
+import top.flyfire.json.component.defaults.parse.ParseJavaObjectCpt;
 import top.flyfire.json.deserialize.Deserializer;
+
+import java.lang.reflect.Type;
 
 /**
  * Created by devll on 2016/10/19.
@@ -13,6 +18,18 @@ public class Json {
         FormatCpt formatCpt = new FormatCpt();
         new Deserializer(json,formatCpt).deserialize();
         return formatCpt.result();
+    }
+
+    public static Object parse(String json){
+        ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
+        Json.exec(json,parseJavaObjectCpt);
+        return parseJavaObjectCpt.result();
+    }
+
+    public static Object parse(String json, Type type){
+        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(type));
+        Json.exec(json,highParseJavaObjectCpt);
+        return  highParseJavaObjectCpt.result();
     }
 
     public static void exec(String json, JsonComponent component){

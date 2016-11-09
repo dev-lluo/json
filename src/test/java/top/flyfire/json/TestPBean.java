@@ -1,13 +1,15 @@
 package top.flyfire.json;
 
-import java.util.Date;
-
 /**
- * Created by devll on 2016/10/17.
+ * Created by devll on 2016/11/6.
  */
-public class TestBean {
+public class TestPBean<C> {
+
     private String a;
+
     private String b;
+
+    private C c;
 
     public String getA() {
         return a;
@@ -25,4 +27,11 @@ public class TestBean {
         this.b = b;
     }
 
+    public C getC() {
+        return c;
+    }
+
+    public void setC(C c) {
+        this.c = c;
+    }
 }

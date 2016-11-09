@@ -27,7 +27,7 @@ public class ValueData<V> implements ValueComponent<V> {
 
     @Override
     public StructValueData render() {
-        return this.owner==null?this.owner:this.owner.push(getValue());
+        return this.owner==null?null:this.owner.push(getValue());
     }
 
     @Override
