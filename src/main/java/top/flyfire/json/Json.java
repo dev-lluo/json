@@ -1,10 +1,10 @@
 package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.json.component.JsonComponent;
-import top.flyfire.json.component.defaults.format.FormatCpt;
-import top.flyfire.json.component.defaults.highparse.HighParseJavaObjectCpt;
-import top.flyfire.json.component.defaults.parse.ParseJavaObjectCpt;
+import top.flyfire.json.deserialize.component.JsonComponent;
+import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
+import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
+import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 import top.flyfire.json.deserialize.Deserializer;
 
 import java.lang.reflect.Type;

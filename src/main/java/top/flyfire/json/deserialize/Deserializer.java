@@ -4,7 +4,7 @@ import top.flyfire.json.Parser;
 import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
 import top.flyfire.json.Token;
-import top.flyfire.json.component.JsonComponent;
+import top.flyfire.json.deserialize.component.JsonComponent;
 
 /**
  * Created by shyy_work on 2016/6/21.

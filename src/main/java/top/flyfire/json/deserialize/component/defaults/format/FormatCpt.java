@@ -1,6 +1,6 @@
-package top.flyfire.json.component.defaults.format;
+package top.flyfire.json.deserialize.component.defaults.format;
 
-import top.flyfire.json.component.JsonComponent;
+import top.flyfire.json.deserialize.component.JsonComponent;
 
 /**
  * Created by devll on 2016/10/18.
@@ -46,7 +46,7 @@ public class FormatCpt implements JsonComponent {
     }
 
     @Override
-    public void value(String value, int level) {
+    public void value(Object value, int level) {
         builder.append(value);
     }
 

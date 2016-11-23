@@ -1,4 +1,4 @@
-package top.flyfire.json.component.defaults.parse;
+package top.flyfire.json.deserialize.component.defaults.parse;
 
 import java.util.List;
 

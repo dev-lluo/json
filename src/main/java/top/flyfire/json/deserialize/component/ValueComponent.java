@@ -1,4 +1,4 @@
-package top.flyfire.json.component;
+package top.flyfire.json.deserialize.component;
 
 /**
  * Created by shyy_work on 2016/10/21.

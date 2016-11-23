@@ -1,9 +1,9 @@
-package top.flyfire.json.component.defaults.highparse;
+package top.flyfire.json.deserialize.component.defaults.highparse;
 
 import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.wrapper.Wrapper;
 import top.flyfire.common.reflect.wrapper.WrapperFactory;
-import top.flyfire.json.component.JsonComponent;
+import top.flyfire.json.deserialize.component.JsonComponent;
 
 
 /**
@@ -76,7 +76,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     }
 
     @Override
-    public void value(String value, int level) {
+    public void value(Object value, int level) {
         if (openCheck(level)) {
             data = new HighValueData(wrapper = WrapperFactory.wrap(metaInfo), value, (HighStructValueData) data);
         }

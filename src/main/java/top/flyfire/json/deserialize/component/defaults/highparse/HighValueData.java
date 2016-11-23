@@ -1,8 +1,7 @@
-package top.flyfire.json.component.defaults.highparse;
+package top.flyfire.json.deserialize.component.defaults.highparse;
 
 import top.flyfire.common.reflect.wrapper.Wrapper;
-import top.flyfire.json.component.ValueComponent;
-import top.flyfire.json.component.defaults.parse.StructValueData;
+import top.flyfire.json.deserialize.component.ValueComponent;
 
 /**
  * Created by devll on 2016/11/1.

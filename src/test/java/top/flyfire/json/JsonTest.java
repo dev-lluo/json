@@ -3,8 +3,8 @@ package top.flyfire.json;
 import org.junit.Test;
 import top.flyfire.common.reflect.RawType;
 import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.json.component.defaults.highparse.HighParseJavaObjectCpt;
-import top.flyfire.json.component.defaults.parse.ParseJavaObjectCpt;
+import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
+import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 
 /**
  * Created by flyfire[dev.lluo@outlook.com] on 2016/6/21.

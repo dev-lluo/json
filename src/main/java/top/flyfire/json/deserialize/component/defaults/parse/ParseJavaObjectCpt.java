@@ -1,6 +1,6 @@
-package top.flyfire.json.component.defaults.parse;
+package top.flyfire.json.deserialize.component.defaults.parse;
 
-import top.flyfire.json.component.JsonComponent;
+import top.flyfire.json.deserialize.component.JsonComponent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class ParseJavaObjectCpt implements JsonComponent {
     }
 
     @Override
-    public void value(String value, int level) {
+    public void value(Object value, int level) {
         data = new ValueData(value, (StructValueData) data);
         dataRender();
     }

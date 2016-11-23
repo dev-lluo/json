@@ -1,6 +1,6 @@
-package top.flyfire.json.component.defaults.parse;
+package top.flyfire.json.deserialize.component.defaults.parse;
 
-import top.flyfire.json.component.StructComponent;
+import top.flyfire.json.deserialize.component.StructComponent;
 
 /**
  * Created by shyy_work on 2016/10/21.
