@@ -41,13 +41,13 @@ public class JsonTest {
 
     @Test
     public void testHighParse2() throws Exception {
-        Object object = Json.parse("{a:123,b:456,c:{a:name,c:'string'}}",new RawType<TestPBean<TestPBean>>(){}.getType());
+        Object object = Json.deserialize("{a:123,b:456,c:{a:name,c:'string'}}",new RawType<TestPBean<TestPBean>>(){}.getType());
         System.out.println(object);
     }
 
     @Test
     public void testHighParse3() throws Exception {
-        Object object = Json.parse("{a:123,b:456,c:123}",new RawType<TestPBean<Integer>>(){}.getType());
+        Object object = Json.deserialize("{a:123,b:456,c:123}",new RawType<TestPBean<Integer>>(){}.getType());
         System.out.println(object);
     }
 

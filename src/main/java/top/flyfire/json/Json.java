@@ -6,6 +6,7 @@ import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 import top.flyfire.json.deserialize.Deserializer;
+import top.flyfire.json.serialize.Serializer;
 
 import java.lang.reflect.Type;
 
@@ -20,16 +21,22 @@ public class Json {
         return formatCpt.result();
     }
 
-    public static Object parse(String json){
+    public static Object deserialize(String json){
         ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
         Json.exec(json,parseJavaObjectCpt);
         return parseJavaObjectCpt.result();
     }
 
-    public static Object parse(String json, Type type){
+    public static Object deserialize(String json, Type type){
         HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(type));
         Json.exec(json,highParseJavaObjectCpt);
         return  highParseJavaObjectCpt.result();
+    }
+
+    public static String serialize(Object object){
+        Serializer serializer = new Serializer(object);
+        serializer.parse();
+        return null;
     }
 
     public static void exec(String json, JsonComponent component){
