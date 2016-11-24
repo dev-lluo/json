@@ -5,6 +5,7 @@ import top.flyfire.common.reflect.RawType;
 import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
+import top.flyfire.json.serialize.Serializer;
 
 /**
  * Created by flyfire[dev.lluo@outlook.com] on 2016/6/21.
@@ -25,6 +26,8 @@ public class JsonTest {
         Json.exec(jsonData,parseJavaObjectCpt);
         Object object = parseJavaObjectCpt.result();
         System.out.println(object);
+        Serializer serializer = new Serializer(object);
+        serializer.parse();
     }
 
     @Test

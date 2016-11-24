@@ -29,6 +29,8 @@ public class JsonRender<T> implements Render {
     public static Render buildRender(Object value,Render parent){
         if(value == null){
             return new JsonValued(value,parent);
+        }else if(value instanceof String){
+            return new JsonValued(value,parent);
         }else if(value.getClass().isPrimitive()){
             return new JsonValued(value,parent);
         }else if(value.getClass().isArray()){
