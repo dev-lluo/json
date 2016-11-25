@@ -1,6 +1,6 @@
 package top.flyfire.json.deserialize.component.defaults.parse;
 
-import top.flyfire.json.deserialize.component.JsonComponent;
+import top.flyfire.json.JsonComponent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

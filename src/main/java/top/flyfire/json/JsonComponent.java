@@ -1,9 +1,9 @@
-package top.flyfire.json.deserialize.component;
+package top.flyfire.json;
 
 /**
  * Created by devll on 2016/10/18.
  */
-public interface JsonComponent {
+public interface JsonComponent<T> {
 
     void openArray(int level);
 
@@ -18,5 +18,7 @@ public interface JsonComponent {
     void value(Object value, int level);
 
     void toNext(int level);
+
+    T result();
 
 }

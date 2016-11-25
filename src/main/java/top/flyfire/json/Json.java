@@ -1,12 +1,12 @@
 package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.json.deserialize.component.JsonComponent;
 import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 import top.flyfire.json.deserialize.Deserializer;
 import top.flyfire.json.serialize.Serializer;
+import top.flyfire.json.serialize.component.defaults.tojson.JsonBuilder;
 
 import java.lang.reflect.Type;
 
@@ -34,9 +34,10 @@ public class Json {
     }
 
     public static String serialize(Object object){
-        Serializer serializer = new Serializer(object);
+        JsonBuilder component = new JsonBuilder();
+        Serializer serializer = new Serializer(object,component);
         serializer.parse();
-        return null;
+        return component.result();
     }
 
     public static void exec(String json, JsonComponent component){

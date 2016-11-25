@@ -1,10 +1,7 @@
 package top.flyfire.json.serialize;
 
 
-import top.flyfire.json.Json;
-import top.flyfire.json.Parser;
-import top.flyfire.json.Peeker;
-import top.flyfire.json.Structure;
+import top.flyfire.json.*;
 import top.flyfire.json.serialize.component.Render;
 import top.flyfire.json.serialize.component.Structed;
 import top.flyfire.json.serialize.component.defaults.JsonIdxStruct;
@@ -19,9 +16,15 @@ public class Serializer implements Peeker ,Parser {
 
     private Render render;
 
+    private JsonComponent component;
+
+    private int level;
+
     private Parser JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
 
-    public Serializer(Object object) {
+    public Serializer(Object object, JsonComponent component) {
+        this.level = 0;
+        this.component = component;
         render = JsonRender.buildRender(object,null);
         JSONVALUEDPARSER = new JsonValuedParser();
         JSONKYSTRUCTPARSER = new JsonKyStructParser();
@@ -63,6 +66,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void parse() {
             System.out.print(getJsonValued().toJson());
+            component.value(getJsonValued().toJson(),level);
             render = getJsonValued().render();
         }
     }
@@ -75,6 +79,7 @@ public class Serializer implements Peeker ,Parser {
                 do{
                     Structed.Transfer transfer = getJsonKyStruct().peeking();
                     System.out.print(transfer.indexing());
+                    component.indexing(transfer.indexing(),level);
                     System.out.print(":");
                     render = transfer.value();
                    peek().parse();
@@ -86,6 +91,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public boolean validateAndStart() {
             System.out.print("{");
+            component.openObject(level++);
             return getJsonKyStruct().notEmptyAndPeekStart();
         }
 
@@ -94,6 +100,7 @@ public class Serializer implements Peeker ,Parser {
             boolean b = getJsonKyStruct().hasNext();
             if(b){
                 System.out.print(",");
+                component.toNext(level);
             }
             return b;
         }
@@ -101,6 +108,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             System.out.print("}");
+            component.closeObject(--level);
             render = getJsonKyStruct().render();
         }
     }
@@ -123,6 +131,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public boolean validateAndStart() {
             System.out.print("[");
+            component.openArray(level++);
             return getJsonIdxStruct().notEmptyAndPeekStart();
         }
 
@@ -131,6 +140,7 @@ public class Serializer implements Peeker ,Parser {
             boolean b = getJsonIdxStruct().hasNext();
             if(b){
                 System.out.print(",");
+                component.toNext(level);
             }
             return b;
         }
@@ -138,6 +148,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             System.out.print("]");
+            component.closeArray(--level);
             render = getJsonIdxStruct().render();
         }
     }

@@ -1,11 +1,11 @@
 package top.flyfire.json.deserialize.component.defaults.format;
 
-import top.flyfire.json.deserialize.component.JsonComponent;
+import top.flyfire.json.JsonComponent;
 
 /**
  * Created by devll on 2016/10/18.
  */
-public class FormatCpt implements JsonComponent {
+public class FormatCpt implements JsonComponent<String> {
 
     StringBuilder builder = new StringBuilder();
 

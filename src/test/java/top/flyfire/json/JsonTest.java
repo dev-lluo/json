@@ -26,8 +26,7 @@ public class JsonTest {
         Json.exec(jsonData,parseJavaObjectCpt);
         Object object = parseJavaObjectCpt.result();
         System.out.println(object);
-        Serializer serializer = new Serializer(object);
-        serializer.parse();
+        System.out.println(Json.serialize(object));
     }
 
     @Test

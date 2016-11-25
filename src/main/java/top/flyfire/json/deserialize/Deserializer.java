@@ -4,7 +4,8 @@ import top.flyfire.json.Parser;
 import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
 import top.flyfire.json.Token;
-import top.flyfire.json.deserialize.component.JsonComponent;
+import top.flyfire.json.JsonComponent;
+import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -26,7 +27,6 @@ public class Deserializer implements Peeker {
     private Parser PRIMITIVEPARSER;
 
     public Deserializer(String source, JsonComponent component) {
-        super();
         this.source = source;
         this.cursor = this.level = 0;
         this.cursorBound = source.length();

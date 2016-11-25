@@ -3,7 +3,7 @@ package top.flyfire.json.deserialize.component.defaults.highparse;
 import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.wrapper.Wrapper;
 import top.flyfire.common.reflect.wrapper.WrapperFactory;
-import top.flyfire.json.deserialize.component.JsonComponent;
+import top.flyfire.json.JsonComponent;
 
 
 /**
