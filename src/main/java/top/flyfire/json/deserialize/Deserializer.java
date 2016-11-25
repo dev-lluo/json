@@ -5,7 +5,6 @@ import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
 import top.flyfire.json.Token;
 import top.flyfire.json.JsonComponent;
-import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -46,11 +45,9 @@ public class Deserializer implements Peeker {
         char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before value
         if(Tokenizer.isArrayStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.openArray(level++);
             return INDEXEDPARSER;
         }else if(Tokenizer.isObjectStart(dest)){
             if(!roll()) throw new RuntimeException(this.source);
-            component.openObject(level++);
             return STRUCTEDPARSER;
         }else{
             return PRIMITIVEPARSER;
@@ -157,6 +154,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public boolean validateAndStart() {
+            component.openObject(level++);
             char dest = fetch();
             if(Tokenizer.isObjectEnd(dest)){
                 roll();
@@ -171,11 +169,9 @@ public class Deserializer implements Peeker {
             char dest;
             if(Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())){//ignore invisible char before value
                 if(!roll()) throw new RuntimeException(source);
-                component.openArray(level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.openObject(level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;
@@ -230,6 +226,7 @@ public class Deserializer implements Peeker {
 
         @Override
         public boolean validateAndStart() {
+            component.openArray(level++);
             char dest;
             if(Tokenizer.isArrayEnd(dest = fetch())){
                 roll();
@@ -244,11 +241,9 @@ public class Deserializer implements Peeker {
             char dest ;
             if(Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())){//ignore invisible char before value
                 if(!roll()) throw new RuntimeException(source);
-                component.openArray(level++);
                 return INDEXEDPARSER;
             }else if(Tokenizer.isObjectStart(dest)){
                 if(!roll()) throw new RuntimeException(source);
-                component.openObject(level++);
                 return STRUCTEDPARSER;
             }else{
                 return PRIMITIVEPARSER;

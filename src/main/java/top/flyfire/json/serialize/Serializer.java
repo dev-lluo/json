@@ -65,7 +65,6 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public void parse() {
-            System.out.print(getJsonValued().toJson());
             component.value(getJsonValued().toJson(),level);
             render = getJsonValued().render();
         }
@@ -78,9 +77,7 @@ public class Serializer implements Peeker ,Parser {
             if(validateAndStart()){
                 do{
                     Structed.Transfer transfer = getJsonKyStruct().peeking();
-                    System.out.print(transfer.indexing());
                     component.indexing(transfer.indexing(),level);
-                    System.out.print(":");
                     render = transfer.value();
                    peek().parse();
                 }while (hasNext());
@@ -90,7 +87,6 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean validateAndStart() {
-            System.out.print("{");
             component.openObject(level++);
             return getJsonKyStruct().notEmptyAndPeekStart();
         }
@@ -99,7 +95,6 @@ public class Serializer implements Peeker ,Parser {
         public boolean hasNext() {
             boolean b = getJsonKyStruct().hasNext();
             if(b){
-                System.out.print(",");
                 component.toNext(level);
             }
             return b;
@@ -107,7 +102,6 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public void validateAndEnd() {
-            System.out.print("}");
             component.closeObject(--level);
             render = getJsonKyStruct().render();
         }
@@ -130,7 +124,6 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean validateAndStart() {
-            System.out.print("[");
             component.openArray(level++);
             return getJsonIdxStruct().notEmptyAndPeekStart();
         }
@@ -139,7 +132,6 @@ public class Serializer implements Peeker ,Parser {
         public boolean hasNext() {
             boolean b = getJsonIdxStruct().hasNext();
             if(b){
-                System.out.print(",");
                 component.toNext(level);
             }
             return b;
@@ -147,7 +139,6 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public void validateAndEnd() {
-            System.out.print("]");
             component.closeArray(--level);
             render = getJsonIdxStruct().render();
         }
