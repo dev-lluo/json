@@ -50,5 +50,11 @@ public class JsonTest {
         System.out.println(object);
     }
 
+    @Test
+    public void testUpdateKernel(){
+        String json = "[1,\"123\"]";
+        Object object = Json.deserialize(json);
+        System.out.print(object);
+    }
 
 }
