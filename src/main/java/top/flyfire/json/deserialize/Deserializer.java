@@ -65,13 +65,11 @@ public class Deserializer implements Peeker {
 
 
     private String tokenRead(int...endToken){
-        System.out.println("in");
         char token = '\0';
          int quoteWrapper ,//0000(none),0101(single),1010(double),error...
                 escape = 0; //0,1
         StringBuilder builder = new StringBuilder();
         readFirst:{
-//            while(!notIn(token = fetch(),' '));
             for(token = fetch();!notIn(token = fetch(),' ');roll());
             if(token=='"')quoteWrapper=2;
             else if(token=='\'') quoteWrapper=1;
@@ -129,7 +127,6 @@ public class Deserializer implements Peeker {
                 throw new RuntimeException();
             }
         }
-        System.out.println("out");
         return builder.toString();
     }
 
@@ -164,43 +161,6 @@ public class Deserializer implements Peeker {
                 do{
 
                     key : {
-//                        fetchIgnoreisInvisibleChar();
-//                        int start = cursor, end = -1;char dest,struct = ((struct = fetch())== Token.D_QUOTE||struct==Token.S_QUOTE)?struct:Token.EMPTY;
-//                        //single quote and double quote
-//                        while(roll()&&struct!=Token.EMPTY){
-//                            if((struct=((dest = fetch())==struct?Token.EMPTY:struct))==Token.EMPTY){
-//                                if (!roll())throw new RuntimeException(source);
-//                                end = cursor;
-//                                break;
-//                            }
-//                        }
-//                        //end single quote and double quote
-//                        if(end>0) {
-//                            //skip invisible char after single quote and double quote
-//                            while (!Tokenizer.isPrp2Val(dest = fetch())) {
-//                                if (!roll())throw new RuntimeException(source);
-//                            }
-//                            //trim quote
-//                            start = start+1;
-//                            end = end-1;
-//                        }else{
-//                            //non single/double quote read
-//                            while (!Tokenizer.isPrp2Val(dest = fetch())) {
-//                                //invisible char skip
-//                                if( end < 0 && Tokenizer.isInvisibleChar(dest)){
-//                                    end = cursor;
-//                                }else if (end>0 && !Tokenizer.isInvisibleChar(dest)){
-//                                    throw new RuntimeException(source);
-//                                }
-//                                if (!roll())throw new RuntimeException(source);
-//                            }
-//                            if(end<0){
-//                                end = cursor;
-//                            }
-//                        }
-//                        roll();
-//                        String property = source.substring(start,end);
-
                         component.indexing(tokenRead(':'),level);
                         roll();
                     }
@@ -342,40 +302,6 @@ public class Deserializer implements Peeker {
     private class ObjectPrimitiveParser implements Parser {
         @Override
         public void parse() {
-//            int start = cursor, end = -1;char dest,struct = ((struct = fetch())== Token.D_QUOTE||struct==Token.S_QUOTE)?struct:Token.EMPTY;
-//            //single quote and double quote
-//            while(roll()&&struct!=Token.EMPTY){
-//                if((struct=((dest = fetch())==struct?Token.EMPTY:struct))==Token.EMPTY){
-//                    if (!roll())throw new RuntimeException(source);
-//                    end = cursor;
-//                    break;
-//                }
-//            }
-//            //end single quote and double quote
-//            if(end>0) {
-//                //skip invisible char after single quote and double quote
-//                while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isObjectEnd(dest)) {
-//                    if (!roll())throw new RuntimeException(source);
-//                }
-//                //trim quote
-//                start = start+1;
-//                end = end-1;
-//            }else{
-//                //non single/double quote read
-//                while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isObjectEnd(dest)) {
-//                    //invisible char skip
-//                    if( end < 0 && Tokenizer.isInvisibleChar(dest)){
-//                        end = cursor;
-//                    }else if (end>0 && !Tokenizer.isInvisibleChar(dest)){
-//                        throw new RuntimeException(source);
-//                    }
-//                    if (!roll())throw new RuntimeException(source);
-//                }
-//                if(end<0){
-//                    end = cursor;
-//                }
-//            }
-//            component.value(source.substring(start, end),level);
             component.value(tokenRead(Token.NEXT,Token.STC_END),level);
         }
     }
@@ -383,39 +309,6 @@ public class Deserializer implements Peeker {
     private class IndexedPrimitiveParser implements Parser {
         @Override
         public void parse() {
-//            int start = cursor,end = -1;char dest ,struct = ((struct =fetch())=='\"'||struct=='\'')?struct:'\0';
-//            while(roll()&&struct!=Token.EMPTY){
-//                if((struct=((dest = fetch())==struct?Token.EMPTY:struct))==Token.EMPTY){
-//                    if (!roll())throw new RuntimeException(source);
-//                    end = cursor;
-//                    break;
-//                }
-//            }
-//            //end single quote and double quote
-//            if(end>0) {
-//                //skip invisible char after single quote and double quote
-//                while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isArrayEnd(dest)) {
-//                    if (!roll())throw new RuntimeException(source);
-//                }
-//                //trim quote
-//                start = start+1;
-//                end = end-1;
-//            }else{
-//                //non single/double quote read
-//                while (!Tokenizer.isNext(dest = fetch()) && !Tokenizer.isArrayEnd(dest)) {
-//                    //invisible char skip
-//                    if( end < 0 && Tokenizer.isInvisibleChar(dest)){
-//                        end = cursor;
-//                    }else if (end>0 && !Tokenizer.isInvisibleChar(dest)){
-//                        throw new RuntimeException(source);
-//                    }
-//                    if (!roll())throw new RuntimeException(source);
-//                }
-//                if(end<0){
-//                    end = cursor;
-//                }
-//            }
-//            component.value(source.substring(start, end),level);
             component.value(tokenRead(Token.NEXT,Token.INX_END),level);
         }
     }
