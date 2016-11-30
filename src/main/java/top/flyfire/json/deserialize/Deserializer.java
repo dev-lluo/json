@@ -5,6 +5,8 @@ import top.flyfire.json.Peeker;
 import top.flyfire.json.Structure;
 import top.flyfire.json.Token;
 import top.flyfire.json.JsonComponent;
+import top.flyfire.json.deserialize.exception.UnexpectedEndTokenException;
+import top.flyfire.json.deserialize.exception.UnexpectedTokenException;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -43,10 +45,10 @@ public class Deserializer implements Peeker {
     public Parser peek() {
         char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before value
         if (Tokenizer.isArrayStart(dest)) {
-            if (!roll()) throw new RuntimeException(this.source);
+            if (!roll()) throw new UnexpectedEndTokenException(this.source);
             return INDEXEDPARSER;
         } else if (Tokenizer.isObjectStart(dest)) {
-            if (!roll()) throw new RuntimeException(this.source);
+            if (!roll()) throw new UnexpectedEndTokenException(this.source);
             return STRUCTEDPARSER;
         } else {
             return PRIMITIVEPARSER;
@@ -72,7 +74,7 @@ public class Deserializer implements Peeker {
         {
             for (token = fetch(); !notIn(token = fetch(), ' '); roll()) ;
             if (token == '"' || token == '\'') quoteWrapper = token;
-            else if(!notIn(token,endToken)) throw new RuntimeException(source.substring(0, cursor));
+            else if(!notIn(token,endToken)) throw new UnexpectedTokenException(source,cursor);
             else quoteWrapper = 0;
         }
         read2End:
@@ -117,7 +119,7 @@ public class Deserializer implements Peeker {
                 while (roll() && notIn(token = fetch(), endToken)) {
                     if (Tokenizer.isInvisibleChar(token))
                         continue;
-                    throw new RuntimeException(source.substring(0, cursor));
+                    throw new UnexpectedTokenException(source,cursor);
                 }
                 ;
             } else {
@@ -133,7 +135,7 @@ public class Deserializer implements Peeker {
                     }else{
                         if(Tokenizer.isInvisibleChar(token))
                             continue ;
-                        throw new RuntimeException(source.substring(0, cursor));
+                        throw new UnexpectedTokenException(source,cursor);
                     }
                 }
             }
@@ -141,7 +143,7 @@ public class Deserializer implements Peeker {
         validate:
         {
             if (quoteWrapper != 0) {
-                throw new RuntimeException();
+                throw new UnexpectedEndTokenException(source);
             }
         }
         return builder.toString();
@@ -154,7 +156,7 @@ public class Deserializer implements Peeker {
     public char fetchIgnoreisInvisibleChar() {
         char dest;
         while (Tokenizer.isInvisibleChar(dest = source.charAt(cursor))) {
-            if (!roll()) throw new RuntimeException(this.source);
+            if (!roll()) throw new UnexpectedTokenException(source,cursor);
         }
         return dest;
     }
@@ -208,7 +210,7 @@ public class Deserializer implements Peeker {
                 component.toNext(level);
                 return true;
             } else {
-                throw new RuntimeException(source.substring(0, cursor));
+                throw new UnexpectedTokenException(source,cursor);
             }
         }
 
@@ -228,10 +230,10 @@ public class Deserializer implements Peeker {
         public Parser peek() {
             char dest;
             if (Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
-                if (!roll()) throw new RuntimeException(source);
+                if (!roll()) throw new UnexpectedEndTokenException(source);
                 return INDEXEDPARSER;
             } else if (Tokenizer.isObjectStart(dest)) {
-                if (!roll()) throw new RuntimeException(source);
+                if (!roll()) throw new UnexpectedEndTokenException(source);
                 return STRUCTEDPARSER;
             } else {
                 return PRIMITIVEPARSER;
@@ -282,7 +284,7 @@ public class Deserializer implements Peeker {
                 component.toNext(level);
                 return true;
             } else {
-                throw new RuntimeException(source.substring(0, cursor));
+                throw new UnexpectedTokenException(source,cursor);
             }
         }
 
@@ -302,10 +304,10 @@ public class Deserializer implements Peeker {
         public Parser peek() {
             char dest;
             if (Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
-                if (!roll()) throw new RuntimeException(source);
+                if (!roll()) throw new UnexpectedEndTokenException(source);
                 return INDEXEDPARSER;
             } else if (Tokenizer.isObjectStart(dest)) {
-                if (!roll()) throw new RuntimeException(source);
+                if (!roll()) throw new UnexpectedEndTokenException(source);
                 return STRUCTEDPARSER;
             } else {
                 return PRIMITIVEPARSER;
