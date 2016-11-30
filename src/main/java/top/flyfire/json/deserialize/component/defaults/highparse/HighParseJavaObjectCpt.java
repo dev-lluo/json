@@ -17,12 +17,20 @@ public class HighParseJavaObjectCpt implements JsonComponent {
 
     private HighValueData data;
 
+    private WrapperFactory wrapperFactory;
+
     private int skipLevel;
 
     public HighParseJavaObjectCpt(MetaInfo metaInfo) {
+        this(metaInfo,WrapperFactory.getInstance());
+    }
+
+    public HighParseJavaObjectCpt(MetaInfo metaInfo,WrapperFactory wrapperFactory) {
         this.skipLevel = -1;
         this.metaInfo = metaInfo;
+        this.wrapperFactory = wrapperFactory;
     }
+
 
     private boolean openCheck(int level){
         if(metaInfo==MetaInfo.NULL&&skipLevel == -1){
@@ -44,7 +52,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openArray(int level) {
         if (openCheck(level)) {
-            data = new HighStructValueData(wrapper = WrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
+            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -57,7 +65,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openObject(int level) {
         if (openCheck(level)) {
-            data = new HighStructValueData(wrapper = WrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
+            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -78,7 +86,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void value(Object value, int level) {
         if (openCheck(level)) {
-            data = new HighValueData(wrapper = WrapperFactory.wrap(metaInfo), value, (HighStructValueData) data);
+            data = new HighValueData(wrapper = wrapperFactory.wrap(metaInfo), value, (HighStructValueData) data);
         }
         closeCheck(level);
         dataRender();

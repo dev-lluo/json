@@ -12,7 +12,7 @@ import top.flyfire.json.serialize.Serializer;
  */
 public class JsonTest {
 
-    private String jsonData = "   {a:   123       ,  \"b\" :    \"123\"\r\n,  c:  \"2015-12-12 12:12:12\"  ,   d    :  [1,2,3  , [ 4,5]]  ,e:456}";
+    private String jsonData = "   {a:   123       ,  \"b\" :    \"123\"\r\n,  c:  \"2015-12-12 12:12:12\"  ,   d    :  [1,2,3  , [ 4,5]]  ,e:456,f:[  ],g:{ }}";
 
     @Test
     public void testFormat() throws Exception {

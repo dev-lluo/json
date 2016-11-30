@@ -1,5 +1,6 @@
 package top.flyfire.json.serialize.component.defaults;
 
+import top.flyfire.common.Destroy;
 import top.flyfire.json.serialize.component.Render;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Set;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonRender<T> implements Render {
+public class JsonRender<T> implements Render,Destroy {
 
     protected Render parent;
 
@@ -23,10 +24,20 @@ public class JsonRender<T> implements Render {
 
     @Override
     public Render render() {
-        return parent;
+        try {
+            return parent;
+        }finally {
+            destroy();
+        }
     }
 
-    public static Render buildRender(Object value,Render parent){
+    @Override
+    public void destroy() {
+        parent = null;
+        value = null;
+    }
+
+    public static Render buildRender(Object value, Render parent){
         if(value == null){
             return new JsonValued(value,parent);
         }else if(value instanceof String){
