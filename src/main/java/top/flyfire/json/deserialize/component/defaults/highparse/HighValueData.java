@@ -6,15 +6,15 @@ import top.flyfire.json.deserialize.component.ValueComponent;
 /**
  * Created by devll on 2016/11/1.
  */
-public class HighValueData implements ValueComponent<Object> {
+public class HighValueData<W extends Wrapper> implements ValueComponent<Object> {
 
-    protected Wrapper wrapper;
+    protected W wrapper;
 
     protected HighStructValueData owner;
 
     protected Object value;
 
-    public HighValueData(Wrapper wrapper, Object value, HighStructValueData owner) {
+    public HighValueData(W wrapper, Object value, HighStructValueData owner) {
         this.value = value;
         this.owner = owner;
         this.wrapper = wrapper;

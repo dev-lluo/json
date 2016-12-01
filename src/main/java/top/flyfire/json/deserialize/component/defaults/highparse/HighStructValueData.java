@@ -1,16 +1,17 @@
 package top.flyfire.json.deserialize.component.defaults.highparse;
 
+import top.flyfire.common.reflect.wrapper.InstanceWrapper;
 import top.flyfire.common.reflect.wrapper.Wrapper;
 import top.flyfire.json.deserialize.component.StructComponent;
 
 /**
  * Created by devll on 2016/11/1.
  */
-public class HighStructValueData<I,V> extends HighValueData implements StructComponent<I> {
+public class HighStructValueData<I,V> extends HighValueData<InstanceWrapper> implements StructComponent<I> {
 
     protected I index;
 
-    public HighStructValueData(Wrapper wrapper, Object value, HighStructValueData owner) {
+    public HighStructValueData(InstanceWrapper wrapper, Object value, HighStructValueData owner) {
         super(wrapper,value, owner);
     }
 

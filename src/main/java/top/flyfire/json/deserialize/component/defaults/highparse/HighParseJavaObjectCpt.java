@@ -1,6 +1,7 @@
 package top.flyfire.json.deserialize.component.defaults.highparse;
 
 import top.flyfire.common.reflect.MetaInfo;
+import top.flyfire.common.reflect.wrapper.InstanceWrapper;
 import top.flyfire.common.reflect.wrapper.Wrapper;
 import top.flyfire.common.reflect.wrapper.WrapperFactory;
 import top.flyfire.json.JsonComponent;
@@ -52,7 +53,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openArray(int level) {
         if (openCheck(level)) {
-            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
+            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), ((InstanceWrapper) wrapper).instance(), (HighStructValueData) data);
         }
     }
 
@@ -65,7 +66,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openObject(int level) {
         if (openCheck(level)) {
-            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), wrapper.instance(), (HighStructValueData) data);
+            data = new HighStructValueData(wrapper = wrapperFactory.wrap(metaInfo), ((InstanceWrapper) wrapper).instance(), (HighStructValueData) data);
         }
     }
 
@@ -79,7 +80,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     public void indexing(Object index, int level) {
         if(indexingCheck()) {
             ((HighStructValueData) data).indexing(index);
-            metaInfo = wrapper.getMetaInfo(index);
+            metaInfo = ((InstanceWrapper) wrapper).getMetaInfo(index);
         }
     }
 
