@@ -1,6 +1,7 @@
 package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
+import top.flyfire.common.reflect.wrapper.WrapperFactory;
 import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
@@ -15,6 +16,8 @@ import java.lang.reflect.Type;
  */
 public class Json {
 
+    private static WrapperFactory wrapperFactory = WrapperFactory.getInstance();
+
     public static String format(String json){
         FormatCpt formatCpt = new FormatCpt();
         new Deserializer(json,formatCpt).deserialize();
@@ -28,7 +31,7 @@ public class Json {
     }
 
     public static Object deserialize(String json, Type type){
-        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(type));
+        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(type),wrapperFactory);
         Json.exec(json,highParseJavaObjectCpt);
         return  highParseJavaObjectCpt.result();
     }

@@ -56,6 +56,10 @@ public class ParseJavaObjectCpt implements JsonComponent {
     }
 
     public Object result(){
-        return data.getValue();
+        try {
+            return data.getValue();
+        }finally {
+            data = null;
+        }
     }
 }

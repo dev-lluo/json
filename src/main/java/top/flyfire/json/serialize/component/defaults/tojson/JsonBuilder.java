@@ -47,6 +47,10 @@ public class JsonBuilder implements JsonComponent<String> {
 
     @Override
     public String result() {
-        return jsonBuffer.toString();
+        try {
+            return jsonBuffer.toString();
+        }finally {
+            jsonBuffer = null;
+        }
     }
 }

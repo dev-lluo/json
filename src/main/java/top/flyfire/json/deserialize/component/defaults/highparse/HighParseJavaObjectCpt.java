@@ -22,10 +22,6 @@ public class HighParseJavaObjectCpt implements JsonComponent {
 
     private int skipLevel;
 
-    public HighParseJavaObjectCpt(MetaInfo metaInfo) {
-        this(metaInfo,WrapperFactory.getInstance());
-    }
-
     public HighParseJavaObjectCpt(MetaInfo metaInfo,WrapperFactory wrapperFactory) {
         this.skipLevel = -1;
         this.metaInfo = metaInfo;
@@ -109,6 +105,10 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     }
 
     public Object result(){
-        return this.data.getValue();
+        try {
+            return this.data.getValue();
+        }finally {
+            this.data = null;
+        }
     }
 }

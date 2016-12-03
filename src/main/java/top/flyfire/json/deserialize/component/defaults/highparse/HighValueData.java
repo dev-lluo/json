@@ -42,5 +42,6 @@ public class HighValueData<W extends Wrapper> implements ValueComponent<Object> 
     public void destroy() {
         this.value = null;
         this.owner = null;
+        this.wrapper = null;
     }
 }

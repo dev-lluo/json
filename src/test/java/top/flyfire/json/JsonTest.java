@@ -31,9 +31,7 @@ public class JsonTest {
 
     @Test
     public void testHighParse() throws Exception {
-        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(TestBean.class));
-        Json.exec(jsonData,highParseJavaObjectCpt);
-        Object object = highParseJavaObjectCpt.result();
+        Object object = Json.deserialize(jsonData,TestBean.class);
         System.out.println(object);
 
     }
