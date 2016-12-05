@@ -3,7 +3,6 @@ package top.flyfire.json.deserialize.component.defaults.highparse;
 import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.wrapper.InstanceWrapper;
 import top.flyfire.common.reflect.wrapper.Wrapper;
-import top.flyfire.common.reflect.wrapper.WrapperFactory;
 import top.flyfire.json.JsonComponent;
 
 
@@ -18,14 +17,11 @@ public class HighParseJavaObjectCpt implements JsonComponent {
 
     private HighValueData data;
 
-    private WrapperFactory wrapperFactory;
-
     private int skipLevel;
 
-    public HighParseJavaObjectCpt(MetaInfo metaInfo,WrapperFactory wrapperFactory) {
+    public HighParseJavaObjectCpt(MetaInfo metaInfo) {
         this.skipLevel = -1;
         this.metaInfo = metaInfo;
-        this.wrapperFactory = wrapperFactory;
     }
 
 
@@ -49,8 +45,8 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openArray(int level) {
         if (openCheck(level)) {
-            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = wrapperFactory.wrap(metaInfo));
-            data = new HighStructValueData(instanceWrapper,instanceWrapper.instance(), (HighStructValueData) data);
+            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
+            data = HighStructValueData.buildStructValueData(instanceWrapper,instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -63,8 +59,8 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openObject(int level) {
         if (openCheck(level)) {
-            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = wrapperFactory.wrap(metaInfo));
-            data = new HighStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
+            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
+            data = HighStructValueData.buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -77,15 +73,14 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void indexing(Object index, int level) {
         if(indexingCheck()) {
-            ((HighStructValueData) data).indexing(index);
-            metaInfo = ((InstanceWrapper) wrapper).getMetaInfo(index);
+            metaInfo = ((HighStructValueData) data).indexing(index);
         }
     }
 
     @Override
     public void value(Object value, int level) {
         if (openCheck(level)) {
-            data = new HighValueData(wrapper = wrapperFactory.wrap(metaInfo), value, (HighStructValueData) data);
+            data = new HighValueData(wrapper = metaInfo.getWrapper(), value, (HighStructValueData) data);
         }
         closeCheck(level);
         dataRender();

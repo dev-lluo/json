@@ -3,9 +3,9 @@ package top.flyfire.json.deserialize.component;
 /**
  * Created by shyy_work on 2016/10/21.
  */
-public interface StructComponent<I> {
+public interface StructComponent<I,R> {
 
-    void indexing(I index);
+    R indexing(I index);
 
     StructComponent push(Object value);
 

@@ -5,7 +5,7 @@ import top.flyfire.json.deserialize.component.StructComponent;
 /**
  * Created by shyy_work on 2016/10/21.
  */
-public abstract class StructValueData<I,V>  extends ValueData<V> implements StructComponent<I> {
+public abstract class StructValueData<I,V>  extends ValueData<V> implements StructComponent<I,Void> {
 
     protected I index;
 
@@ -14,8 +14,9 @@ public abstract class StructValueData<I,V>  extends ValueData<V> implements Stru
     }
 
     @Override
-    public void indexing(I index) {
+    public Void indexing(I index) {
         this.index = index;
+        return null;
     }
 
     @Override

@@ -8,22 +8,44 @@
     <artifactId>json</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-	<profiles>
-		<profile>
-			<id>jdk17</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<jdk>1.7</jdk>
-			</activation>
-			<properties>
-				  <maven.compiler.source>1.7</maven.compiler.source>
-				  <maven.compiler.target>1.7</maven.compiler.target>
-				  <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
-				  </properties>
-			</profile>
-	</profiles>
-	
-
+    <profiles>
+        <profile>
+            <id>jdk17</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <jdk>1.7</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.source>1.7</maven.compiler.source>
+                <maven.compiler.target>1.7</maven.compiler.target>
+                <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
+            </properties>
+        </profile>
+    </profiles>
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<outputDirectory>${project.build.directory}/lib</outputDirectory>-->
+                    <!--<excludeTransitive>false</excludeTransitive>-->
+                    <!--<stripVersion>true</stripVersion>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<forkMode>pertest</forkMode>-->
+                    <!--<argLine>${maven.test.jvmargs}</argLine>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
+    <!--<properties>-->
+        <!--<maven.test.jvmargs>-javaagent:${project.build.directory}/lib/timeagent.jar=top/flyfire/common/reflect/wrapper</maven.test.jvmargs>-->
+    <!--</properties>-->
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -34,6 +56,11 @@
         <dependency>
             <groupId>top.flyfire</groupId>
             <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>top.flyfire</groupId>
+            <artifactId>timeagent</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

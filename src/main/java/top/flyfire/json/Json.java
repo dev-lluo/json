@@ -16,7 +16,6 @@ import java.lang.reflect.Type;
  */
 public class Json {
 
-    private static WrapperFactory wrapperFactory = WrapperFactory.getInstance();
 
     public static String format(String json){
         FormatCpt formatCpt = new FormatCpt();
@@ -31,7 +30,7 @@ public class Json {
     }
 
     public static Object deserialize(String json, Type type){
-        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.unWrap(type),wrapperFactory);
+        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.getMetaInfo(type));
         Json.exec(json,highParseJavaObjectCpt);
         return  highParseJavaObjectCpt.result();
     }
