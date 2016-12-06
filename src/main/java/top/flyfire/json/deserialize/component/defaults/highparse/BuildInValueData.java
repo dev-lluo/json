@@ -8,7 +8,7 @@ import top.flyfire.common.reflect.wrapper.BuildInWrapper;
 /**
  * Created by devll on 2016/12/5.
  */
-public class BuildInValueData extends HighStructValueData<String,BuildInWrapper>  {
+public class BuildInValueData extends HighStructValueData<String,BuildInWrapper,Object>  {
 
     protected FieldMetaInfo fieldMetaInfo;
 
@@ -24,7 +24,7 @@ public class BuildInValueData extends HighStructValueData<String,BuildInWrapper>
 
     @Override
     public HighStructValueData push(Object value) {
-        this.fieldMetaInfo.invokeSetter(this.value, value);
+        this.fieldMetaInfo.setValueTo(this.value, value);
         return this;
     }
 }

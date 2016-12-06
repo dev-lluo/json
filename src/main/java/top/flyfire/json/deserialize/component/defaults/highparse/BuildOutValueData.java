@@ -6,11 +6,11 @@ import top.flyfire.common.reflect.wrapper.BuildOutWrapper;
 /**
  * Created by devll on 2016/12/5.
  */
-public class BuildOutValueData extends HighStructValueData<Object,BuildOutWrapper> {
+public abstract class BuildOutValueData<W extends BuildOutWrapper,O> extends HighStructValueData<Object,W,O> {
 
     private MetaInfo metaInfo;
 
-    public BuildOutValueData(BuildOutWrapper wrapper, Object value, HighStructValueData owner) {
+    public BuildOutValueData(W wrapper, O value, HighStructValueData owner) {
         super(wrapper, value, owner);
         metaInfo = wrapper.getMetaInfo();
     }
@@ -22,10 +22,7 @@ public class BuildOutValueData extends HighStructValueData<Object,BuildOutWrappe
     }
 
     @Override
-    public HighStructValueData push(Object value) {
-        this.wrapper.set(this.index, this.value, value);
-        return this;
-    }
+    public abstract HighStructValueData push(Object value);
 
     @Override
     public void destroy() {

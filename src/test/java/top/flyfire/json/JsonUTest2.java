@@ -926,7 +926,7 @@ public class JsonUTest2 {
             "\n" +
             "]";
 
-    int testCount = 100000;
+    int testCount = 1000000;
 
     @Test
     public void testFlyFireJson() {

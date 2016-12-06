@@ -1,20 +1,21 @@
 package top.flyfire.json.deserialize.component.defaults.highparse;
 
+import top.flyfire.common.reflect.wrapper.ValueWrapper;
 import top.flyfire.common.reflect.wrapper.Wrapper;
 import top.flyfire.json.deserialize.component.ValueComponent;
 
 /**
  * Created by devll on 2016/11/1.
  */
-public class HighValueData<W extends Wrapper> implements ValueComponent<Object> {
+public class HighValueData<W extends Wrapper,O> implements ValueComponent<Object> {
 
     protected W wrapper;
 
     protected HighStructValueData owner;
 
-    protected Object value;
+    protected O value;
 
-    public HighValueData(W wrapper, Object value, HighStructValueData owner) {
+    public HighValueData(W wrapper, O value, HighStructValueData owner) {
         this.value = value;
         this.owner = owner;
         this.wrapper = wrapper;
@@ -23,7 +24,7 @@ public class HighValueData<W extends Wrapper> implements ValueComponent<Object> 
     @Override
     public Object getValue() {
         try {
-            return this.wrapper.rawValue(value);
+            return value;
         }finally {
             destroy();
         }

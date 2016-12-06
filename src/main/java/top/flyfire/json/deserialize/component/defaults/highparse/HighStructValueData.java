@@ -11,11 +11,11 @@ import top.flyfire.json.deserialize.component.StructComponent;
 /**
  * Created by devll on 2016/11/1.
  */
-public abstract class HighStructValueData<I,W extends InstanceWrapper> extends HighValueData<W> implements StructComponent<I,MetaInfo> {
+public abstract class HighStructValueData<I,W extends InstanceWrapper,O> extends HighValueData<W,O> implements StructComponent<I,MetaInfo> {
 
     protected I index;
 
-    public HighStructValueData(W wrapper, Object value, HighStructValueData owner) {
+    public HighStructValueData(W wrapper, O value, HighStructValueData owner) {
         super(wrapper,value, owner);
     }
 
@@ -31,13 +31,13 @@ public abstract class HighStructValueData<I,W extends InstanceWrapper> extends H
         this.index = null;
     }
 
-    public final static HighStructValueData buildStructValueData(InstanceWrapper wrapper, Object value, HighStructValueData owner){
-        if(wrapper instanceof BuildInWrapper){
-            return new BuildInValueData((BuildInWrapper) wrapper,value,owner);
-        }else if(wrapper instanceof BuildOutWrapper){
-            return new BuildOutValueData((BuildOutWrapper) wrapper,value,owner);
-        }else{
-            throw new JsonException("unknow wrapper "+wrapper);
-        }
-    }
+//    public final static HighStructValueData buildStructValueData(InstanceWrapper wrapper, Object value, HighStructValueData owner){
+//        if(wrapper instanceof BuildInWrapper){
+//            return new BuildInValueData((BuildInWrapper) wrapper,value,owner);
+//        }else if(wrapper instanceof BuildOutWrapper){
+//            return new BuildOutValueData((BuildOutWrapper) wrapper,value,owner);
+//        }else{
+//            throw new JsonException("unknow wrapper "+wrapper);
+//        }
+//    }
 }

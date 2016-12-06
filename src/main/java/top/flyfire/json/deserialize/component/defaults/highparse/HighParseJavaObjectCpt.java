@@ -1,9 +1,12 @@
 package top.flyfire.json.deserialize.component.defaults.highparse;
 
 import top.flyfire.common.reflect.MetaInfo;
-import top.flyfire.common.reflect.wrapper.InstanceWrapper;
-import top.flyfire.common.reflect.wrapper.Wrapper;
+import top.flyfire.common.reflect.wrapper.*;
 import top.flyfire.json.JsonComponent;
+import top.flyfire.json.JsonException;
+
+import java.util.Collection;
+import java.util.Map;
 
 
 /**
@@ -46,7 +49,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     public void openArray(int level) {
         if (openCheck(level)) {
             InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
-            data = HighStructValueData.buildStructValueData(instanceWrapper,instanceWrapper.instance(), (HighStructValueData) data);
+            data = buildStructValueData(instanceWrapper,instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -60,7 +63,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     public void openObject(int level) {
         if (openCheck(level)) {
             InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
-            data = HighStructValueData.buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
+            data = buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
 
@@ -104,6 +107,20 @@ public class HighParseJavaObjectCpt implements JsonComponent {
             return this.data.getValue();
         }finally {
             this.data = null;
+        }
+    }
+
+    private final static HighStructValueData buildStructValueData(InstanceWrapper wrapper, Object value, HighStructValueData owner){
+        if(wrapper instanceof BuildInWrapper){
+            return new BuildInValueData((BuildInWrapper) wrapper,value,owner);
+        }if(wrapper instanceof CollectionWrapper){
+            return new CollectionValueData((CollectionWrapper) wrapper, (Collection) value,owner);
+        }else if(wrapper instanceof MapWrapper){
+            return new MapValueData((MapWrapper) wrapper,(Map) value,owner);
+        }else if(wrapper instanceof ArrayWrapper){
+            return new CollectionValueData((CollectionWrapper) wrapper, (Collection) value,owner);
+        }else{
+            throw new JsonException("unknow wrapper ["+wrapper+"]");
         }
     }
 }
