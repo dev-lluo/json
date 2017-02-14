@@ -2,10 +2,7 @@ package top.flyfire.json;
 
 import org.junit.Test;
 import top.flyfire.common.reflect.RawType;
-import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
-import top.flyfire.json.serialize.Serializer;
 
 /**
  * Created by flyfire[dev.lluo@outlook.com] on 2016/6/21.
@@ -23,7 +20,7 @@ public class JsonTest {
     @Test
     public void testParse() throws Exception {
         ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
-        Json.exec(jsonData,parseJavaObjectCpt);
+        Json.deserialize(jsonData,parseJavaObjectCpt);
         Object object = parseJavaObjectCpt.result();
         System.out.println(object);
         System.out.println(Json.serialize(object));

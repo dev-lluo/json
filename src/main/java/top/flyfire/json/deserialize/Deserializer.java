@@ -12,7 +12,7 @@ import top.flyfire.json.deserialize.exception.UnexpectedTokenException;
  * Created by shyy_work on 2016/6/21.
  */
 @SuppressWarnings("all")
-public class Deserializer implements Peeker {
+public class Deserializer implements Peeker,Parser {
 
     private String source;
 
@@ -36,7 +36,8 @@ public class Deserializer implements Peeker {
         PRIMITIVEPARSER = new PrimitiveParser();
     }
 
-    public void deserialize() {
+    @Override
+    public void parse() {
         peek().parse();
     }
 

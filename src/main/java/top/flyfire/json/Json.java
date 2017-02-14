@@ -1,7 +1,6 @@
 package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.common.reflect.wrapper.WrapperFactory;
 import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
@@ -19,31 +18,37 @@ public class Json {
 
     public static String format(String json){
         FormatCpt formatCpt = new FormatCpt();
-        new Deserializer(json,formatCpt).deserialize();
+        Json.deserialize(json,formatCpt);
         return formatCpt.result();
     }
 
     public static Object deserialize(String json){
         ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
-        Json.exec(json,parseJavaObjectCpt);
+        Json.deserialize(json,parseJavaObjectCpt);
         return parseJavaObjectCpt.result();
     }
 
     public static Object deserialize(String json, Type type){
         HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.getMetaInfo(type));
-        Json.exec(json,highParseJavaObjectCpt);
+        Json.deserialize(json,highParseJavaObjectCpt);
         return  highParseJavaObjectCpt.result();
     }
 
     public static String serialize(Object object){
         JsonBuilder component = new JsonBuilder();
-        Serializer serializer = new Serializer(object,component);
-        serializer.parse();
+        Json.serialize(object,component);
         return component.result();
     }
 
-    public static void exec(String json, JsonComponent component){
-        new Deserializer(json,component).deserialize();
+    public static void deserialize(String json, JsonComponent component){
+        Json.exec(new Deserializer(json,component));
     }
 
+    public static void serialize(Object object, JsonComponent component){
+        Json.exec(new Serializer(object,component));
+    }
+
+    public static void exec(Parser parser){
+        parser.parse();
+    }
 }
