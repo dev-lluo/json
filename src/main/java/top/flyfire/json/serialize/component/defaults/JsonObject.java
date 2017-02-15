@@ -1,29 +1,38 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
+import top.flyfire.common.reflect.MetaInfo;
+import top.flyfire.common.reflect.ReflectUtils;
+import top.flyfire.common.reflect.metainfo.ClassMetaInfo;
+import top.flyfire.common.reflect.metainfo.FieldMetaInfo;
+
+import java.util.Enumeration;
 
 /**
  * Created by devll on 2016/11/22.
  */
 public class JsonObject extends JsonKyStruct {
 
-    public JsonObject(Object value, Render parent) {
+    Enumeration<FieldMetaInfo> fieldMetaInfoEnumeration;
+
+    public JsonObject(Object value, JsonValue parent) {
         super(value, parent);
+        ClassMetaInfo metaInfo = (ClassMetaInfo) ReflectUtils.getMetaInfo(cached.getClass());
+        fieldMetaInfoEnumeration = metaInfo.fieldEnum();
     }
 
     @Override
     public boolean notEmptyAndPeekStart() {
-        return false;
+        return fieldMetaInfoEnumeration.hasMoreElements();
     }
 
     @Override
     public Transfer peeking() {
-        return null;
+        FieldMetaInfo fieldMetaInfo = fieldMetaInfoEnumeration.nextElement();
+        return new TransferForKy(fieldMetaInfo.getFieldName(),fieldMetaInfo.invokeGetter(cached));
     }
 
     @Override
     public boolean hasNext() {
-        return false;
+        return fieldMetaInfoEnumeration.hasMoreElements();
     }
 }

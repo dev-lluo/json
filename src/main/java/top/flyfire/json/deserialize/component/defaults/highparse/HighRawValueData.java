@@ -14,7 +14,7 @@ public class HighRawValueData extends HighValueData<ValueWrapper,Object> {
     @Override
     public Object getValue() {
         try {
-            return wrapper.rawValue(value);
+            return wrapper.rawValue(cached);
         }finally {
             destroy();
         }

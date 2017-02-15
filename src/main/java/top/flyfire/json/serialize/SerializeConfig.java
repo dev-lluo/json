@@ -1,5 +1,13 @@
 package top.flyfire.json.serialize;
 
+
+import top.flyfire.common.StringUtils;
+import top.flyfire.common.chainedmode.Handler;
+import top.flyfire.common.chainedmode.HandlerChain;
+import top.flyfire.common.reflect.ReflectUtils;
+
+import java.util.Date;
+
 /**
  * Created by devll on 2017/2/14.
  */
@@ -10,6 +18,8 @@ public class SerializeConfig {
     private boolean ignoreCircularReference;
 
     private int readDeep;
+
+    private HandlerChain<String,Object> value2StringHandlerChain;
 
 
     public SerializeConfig() {
@@ -25,8 +35,51 @@ public class SerializeConfig {
     }
 
     public SerializeConfig(boolean ignoreCircularReference, int readDeep) {
+        this(ignoreCircularReference,readDeep,HandlerChain.buildChain(
+                new Handler<String, Object>() {
+                    @Override
+                    public String handling(Object o, HandlerChain<String, Object> handlerChain) {
+                        if (o == null) {
+                            return "null";
+                        } else {
+                            return handlerChain.handling(o);
+                        }
+                    }
+                }, new Handler<String, Object>() {
+                    @Override
+                    public String handling(Object o, HandlerChain<String, Object> handlerChain) {
+                        if (o instanceof Date) {
+                            return StringUtils.merge("\"", o.toString(), "\"");
+                        } else {
+                            return handlerChain.handling(o);
+                        }
+                    }
+                }, new Handler<String, Object>() {
+                    @Override
+                    public String handling(Object o, HandlerChain<String, Object> handlerChain) {
+                        if (ReflectUtils.isJdkPrimitiveType(o.getClass())) {
+                            return o.toString();
+                        } else {
+                            return handlerChain.handling(o);
+                        }
+                    }
+                }, new Handler<String, Object>() {
+                    @Override
+                    public String handling(Object o, HandlerChain<String, Object> handlerChain) {
+                        if(o instanceof String){
+                            return StringUtils.merge("\"",(String) o,"\"");
+                        }else {
+                            return handlerChain.handling(o);
+                        }
+                    }
+                }
+        ));
+    }
+
+    public SerializeConfig(boolean ignoreCircularReference, int readDeep, HandlerChain<String,Object> value2StringHandlerChain) {
         this.ignoreCircularReference = ignoreCircularReference;
         this.readDeep = readDeep;
+        this.value2StringHandlerChain = value2StringHandlerChain;
     }
 
     public boolean isIgnoreCircularReference() {
@@ -35,5 +88,9 @@ public class SerializeConfig {
 
     public int getReadDeep() {
         return readDeep;
+    }
+
+    public String value2String(Object object){
+        return value2StringHandlerChain.handling(object);
     }
 }

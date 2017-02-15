@@ -22,7 +22,7 @@ public abstract class BuildOutValueData<W extends BuildOutWrapper,O> extends Hig
     }
 
     @Override
-    public abstract HighStructValueData push(Object value);
+    public abstract void push(Object value);
 
     @Override
     public void destroy() {

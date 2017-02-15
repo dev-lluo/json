@@ -1,22 +1,21 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
+import top.flyfire.json.serialize.component.StructSwap;
 
 
 /**
  * Created by devll on 2016/11/23.
  */
-public abstract class JsonIdxStruct<T> extends JsonRender<T> implements Structed {
-    public JsonIdxStruct(T value, Render parent) {
-        super(value, parent);
+public abstract class JsonIdxStruct<T> extends JsonValue<T> implements StructSwap {
+    public JsonIdxStruct(T cached, JsonValue o) {
+        super(cached, o);
     }
 
     protected class TransferForIdx implements Transfer<Integer>{
 
         private Integer i;
 
-        private Render v;
+        private JsonValue v;
 
         public TransferForIdx(Integer i, Object object) {
             this.i = i;
@@ -29,7 +28,7 @@ public abstract class JsonIdxStruct<T> extends JsonRender<T> implements Structed
         }
 
         @Override
-        public Render value() {
+        public JsonValue value() {
             return v;
         }
     }

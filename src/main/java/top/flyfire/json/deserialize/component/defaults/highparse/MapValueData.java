@@ -14,8 +14,7 @@ public class MapValueData extends BuildOutValueData<MapWrapper,Map> {
     }
 
     @Override
-    public HighStructValueData push(Object value) {
-        this.value.put(index,value);
-        return this;
+    public void push(Object value) {
+        this.cached.put(index,value);
     }
 }

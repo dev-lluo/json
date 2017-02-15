@@ -13,9 +13,8 @@ public class ObjectData extends StructValueData<String,Map> {
     }
 
     @Override
-    public StructValueData push(Object value) {
-        this.value.put(this.index,value);
-        return this;
+    public void push(Object value) {
+        this.cached.put(this.index,value);
     }
 
 }

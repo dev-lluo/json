@@ -49,7 +49,7 @@ public class ParseJavaObjectCpt implements JsonComponent {
     }
 
     private void dataRender(){
-        ValueData temp = data.render();
+        ValueData temp = data.getParent();
         if(temp!=null){
             data = temp;
         }

@@ -1,38 +1,20 @@
 package top.flyfire.json.deserialize.component.defaults.parse;
 
-import top.flyfire.json.deserialize.component.ValueComponent;
+import top.flyfire.common.ObjectUtils;
+import top.flyfire.json.JsonSwap;
+import top.flyfire.json.deserialize.component.defaults.AbstractValueData;
 
 /**
  * Created by shyy_work on 2016/10/21.
  */
-public class ValueData<V> implements ValueComponent<V> {
+public class ValueData<V> extends AbstractValueData<V,StructValueData> {
 
-    protected StructValueData owner;
-
-    protected V value;
-
-    public ValueData(V value,StructValueData owner){
-        this.value = value;
-        this.owner = owner;
+    public ValueData(V cached, StructValueData structValueData) {
+        super(cached, structValueData);
     }
 
     @Override
-    public V getValue() {
-        try {
-            return value;
-        }finally {
-            destroy();
-        }
-    }
-
-    @Override
-    public StructValueData render() {
-        return this.owner==null?null:this.owner.push(getValue());
-    }
-
-    @Override
-    public void destroy() {
-        this.value = null;
-        this.owner = null;
+    public StructValueData getParent() {
+        return super.getParent();
     }
 }

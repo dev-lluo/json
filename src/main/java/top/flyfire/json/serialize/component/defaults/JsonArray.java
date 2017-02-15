@@ -1,8 +1,5 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
-
 import java.lang.reflect.Array;
 
 /**
@@ -12,7 +9,7 @@ public class JsonArray extends JsonIdxStruct{
 
     private int length,cursor;
 
-    public JsonArray(Object value, Render parent) {
+    public JsonArray(Object value, JsonValue parent) {
         super(value, parent);
         length = Array.getLength(value);
         cursor = -1;
@@ -25,7 +22,7 @@ public class JsonArray extends JsonIdxStruct{
 
     @Override
     public Transfer peeking() {
-        return new TransferForIdx(cursor,Array.get(value,cursor));
+        return new TransferForIdx(cursor,Array.get(cached,cursor));
     }
 
     @Override

@@ -1,8 +1,5 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
-
 import java.util.Iterator;
 import java.util.Set;
 
@@ -15,13 +12,13 @@ public class JsonSet extends JsonIdxStruct<Set>{
 
     protected int cursor;
 
-    public JsonSet(Set value, Render parent) {
+    public JsonSet(Set value, JsonValue parent) {
         super(value, parent);
     }
 
     @Override
     public boolean notEmptyAndPeekStart() {
-        iterator = value.iterator();
+        iterator = cached.iterator();
         cursor++;
         return iterator.hasNext();
     }

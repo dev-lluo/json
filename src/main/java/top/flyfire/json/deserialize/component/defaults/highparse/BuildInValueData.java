@@ -23,8 +23,7 @@ public class BuildInValueData extends HighStructValueData<String,BuildInWrapper,
     }
 
     @Override
-    public HighStructValueData push(Object value) {
-        this.fieldMetaInfo.setValueTo(this.value, value);
-        return this;
+    public void push(Object value) {
+        this.fieldMetaInfo.setValueTo(this.cached, value);
     }
 }

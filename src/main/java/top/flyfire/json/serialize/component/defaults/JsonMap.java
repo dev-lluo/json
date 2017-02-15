@@ -1,9 +1,5 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.Json;
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
-
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,13 +10,13 @@ public class JsonMap extends JsonKyStruct<Map> {
 
     protected Iterator<Map.Entry> iterator;
 
-    public JsonMap(Map value, Render parent) {
+    public JsonMap(Map value, JsonValue parent) {
         super(value, parent);
     }
 
     @Override
     public boolean notEmptyAndPeekStart() {
-        iterator = this.value.entrySet().iterator();
+        iterator = this.cached.entrySet().iterator();
         return iterator.hasNext();
     }
 

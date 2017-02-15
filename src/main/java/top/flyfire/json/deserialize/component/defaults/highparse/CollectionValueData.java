@@ -14,8 +14,7 @@ public class CollectionValueData extends BuildOutValueData<CollectionWrapper,Col
     }
 
     @Override
-    public HighStructValueData push(Object value) {
-        this.value.add(value);
-        return this;
+    public void push(Object value) {
+        this.cached.add(value);
     }
 }

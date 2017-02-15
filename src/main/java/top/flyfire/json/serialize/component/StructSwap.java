@@ -1,9 +1,11 @@
 package top.flyfire.json.serialize.component;
 
+import top.flyfire.json.serialize.component.defaults.JsonValue;
+
 /**
  * Created by devll on 2016/11/21.
  */
-public interface Structed {
+public interface StructSwap {
 
     boolean notEmptyAndPeekStart();
 
@@ -15,7 +17,7 @@ public interface Structed {
 
         I indexing();
 
-        Render value();
+        JsonValue value();
 
     }
 

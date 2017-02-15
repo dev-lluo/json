@@ -11,8 +11,7 @@ public class ArrayData extends StructValueData<Integer,List> {
     }
 
     @Override
-    public StructValueData push(Object value) {
-        this.value.add(this.index,value);
-        return this;
+    public void push(Object value) {
+        this.cached.add(this.index,value);
     }
 }

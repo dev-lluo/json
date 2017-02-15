@@ -14,15 +14,14 @@ public class ArrayValueData extends BuildOutValueData<ArrayWrapper,Collection> {
     }
 
     @Override
-    public HighStructValueData push(Object value) {
-        this.value.add(value);
-        return this;
+    public void push(Object value) {
+        this.cached.add(value);
     }
 
     @Override
     public Object getValue() {
         try {
-            return wrapper.rawValue(value);
+            return wrapper.rawValue(cached);
         }finally {
             destroy();
         }

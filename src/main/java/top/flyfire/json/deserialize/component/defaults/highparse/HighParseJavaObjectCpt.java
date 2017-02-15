@@ -16,8 +16,6 @@ public class HighParseJavaObjectCpt implements JsonComponent {
 
     private MetaInfo metaInfo;
 
-    private Wrapper wrapper;
-
     private HighValueData data;
 
     private int skipLevel;
@@ -48,7 +46,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openArray(int level) {
         if (openCheck(level)) {
-            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
+            InstanceWrapper instanceWrapper = (InstanceWrapper) ( metaInfo.getWrapper());
             data = buildStructValueData(instanceWrapper,instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
@@ -62,7 +60,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void openObject(int level) {
         if (openCheck(level)) {
-            InstanceWrapper instanceWrapper = (InstanceWrapper) (wrapper = metaInfo.getWrapper());
+            InstanceWrapper instanceWrapper = (InstanceWrapper) (metaInfo.getWrapper());
             data = buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
         }
     }
@@ -83,7 +81,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     @Override
     public void value(Object value, int level) {
         if (openCheck(level)) {
-            data = new HighValueData(wrapper = metaInfo.getWrapper(), value, (HighStructValueData) data);
+            data = new HighRawValueData((ValueWrapper) (metaInfo.getWrapper()), value, (HighStructValueData) data);
         }
         closeCheck(level);
         dataRender();
@@ -95,10 +93,9 @@ public class HighParseJavaObjectCpt implements JsonComponent {
     }
 
     private void dataRender(){
-        HighStructValueData temp = data.render();
+        HighStructValueData temp = data.getParent();
         if(temp!=null){
             data = temp;
-            wrapper = data.wrapper;
         }
     }
 
@@ -118,7 +115,7 @@ public class HighParseJavaObjectCpt implements JsonComponent {
         }else if(wrapper instanceof MapWrapper){
             return new MapValueData((MapWrapper) wrapper,(Map) value,owner);
         }else if(wrapper instanceof ArrayWrapper){
-            return new CollectionValueData((CollectionWrapper) wrapper, (Collection) value,owner);
+            return new ArrayValueData((ArrayWrapper) wrapper, (Collection) value,owner);
         }else{
             throw new JsonException("unknow wrapper ["+wrapper+"]");
         }

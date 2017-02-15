@@ -2,37 +2,42 @@ package top.flyfire.json.serialize;
 
 
 import top.flyfire.json.*;
-import top.flyfire.json.serialize.component.Render;
-import top.flyfire.json.serialize.component.Structed;
+import top.flyfire.json.serialize.component.StructSwap;
 import top.flyfire.json.serialize.component.defaults.JsonIdxStruct;
 import top.flyfire.json.serialize.component.defaults.JsonKyStruct;
-import top.flyfire.json.serialize.component.defaults.JsonRender;
-import top.flyfire.json.serialize.component.defaults.JsonValued;
+import top.flyfire.json.serialize.component.defaults.JsonValue;
 
 /**
  * Created by devll on 2016/11/9.
  */
 public class Serializer implements Peeker ,Parser {
 
-    private Render render;
+    private JsonValue render;
 
     private JsonComponent component;
+
+    private SerializeConfig config;
 
     private int level;
 
     private Parser JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
 
     public Serializer(Object object, JsonComponent component) {
+        this(object,component,SerializeConfig.DEFAULT);
+    }
+
+    public Serializer(Object object, JsonComponent component,SerializeConfig config){
         this.level = 0;
         this.component = component;
-        render = JsonRender.buildRender(object,null);
+        render = JsonValue.buildRender(object,null);
+        this.config = config;
         JSONVALUEDPARSER = new JsonValuedParser();
         JSONKYSTRUCTPARSER = new JsonKyStructParser();
         JSONIDXSTRUCTPARSER = new JsonIdxStructParser();
     }
 
-    private JsonValued getJsonValued(){
-        return (JsonValued) render;
+    private JsonValue getJsonValued(){
+        return (JsonValue) render;
     }
 
     private JsonKyStruct getJsonKyStruct(){
@@ -50,13 +55,13 @@ public class Serializer implements Peeker ,Parser {
 
     @Override
     public Parser peek() {
-        if(render instanceof JsonValued){
-            return JSONVALUEDPARSER;
-        }else if(render instanceof JsonKyStruct){
+        if(render instanceof JsonKyStruct){
             return JSONKYSTRUCTPARSER;
         }else if(render instanceof JsonIdxStruct){
             return JSONIDXSTRUCTPARSER;
-        }else{
+        }else if(render instanceof JsonValue){
+            return JSONVALUEDPARSER;
+        }else {
             throw new RuntimeException();
         }
     }
@@ -65,8 +70,8 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public void parse() {
-            component.value(getJsonValued().toJson(),level);
-            render = getJsonValued().render();
+            component.value(config.value2String(getJsonValued().getCached()),level);
+            render = getJsonValued().getParent();
         }
     }
 
@@ -76,7 +81,7 @@ public class Serializer implements Peeker ,Parser {
         public void parse() {
             if(validateAndStart()){
                 do{
-                    Structed.Transfer transfer = getJsonKyStruct().peeking();
+                    StructSwap.Transfer transfer = getJsonKyStruct().peeking();
                     component.indexing(transfer.indexing(),level);
                     render = transfer.value();
                    peek().parse();
@@ -103,7 +108,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeObject(--level);
-            render = getJsonKyStruct().render();
+            render = getJsonKyStruct().getParent();
         }
     }
 
@@ -114,7 +119,7 @@ public class Serializer implements Peeker ,Parser {
         public void parse() {
             if(validateAndStart()){
                 do{
-                    Structed.Transfer transfer = getJsonIdxStruct().peeking();
+                    StructSwap.Transfer transfer = getJsonIdxStruct().peeking();
                     render = transfer.value();
                     peek().parse();
                 }while (hasNext());
@@ -140,7 +145,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeArray(--level);
-            render = getJsonIdxStruct().render();
+            render = getJsonIdxStruct().getParent();
         }
     }
 
