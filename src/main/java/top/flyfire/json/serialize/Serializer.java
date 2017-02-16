@@ -12,7 +12,7 @@ import top.flyfire.json.serialize.component.defaults.JsonValue;
  */
 public class Serializer implements Peeker ,Parser {
 
-    private JsonValue render;
+    private JsonValue value;
 
     private JsonComponent component;
 
@@ -29,7 +29,7 @@ public class Serializer implements Peeker ,Parser {
     public Serializer(Object object, JsonComponent component,SerializeConfig config){
         this.level = 0;
         this.component = component;
-        render = JsonValue.buildRender(object,null);
+        value = JsonValue.buildValue(object,null);
         this.config = config;
         JSONVALUEDPARSER = new JsonValuedParser();
         JSONKYSTRUCTPARSER = new JsonKyStructParser();
@@ -37,15 +37,11 @@ public class Serializer implements Peeker ,Parser {
     }
 
     private JsonValue getJsonValued(){
-        return (JsonValue) render;
+        return (JsonValue) value;
     }
 
-    private JsonKyStruct getJsonKyStruct(){
-        return (JsonKyStruct) render;
-    }
-
-    private JsonIdxStruct getJsonIdxStruct(){
-        return (JsonIdxStruct) render;
+    private StructSwap getStructSwap(){
+        return (StructSwap) value;
     }
 
     @Override
@@ -55,11 +51,11 @@ public class Serializer implements Peeker ,Parser {
 
     @Override
     public Parser peek() {
-        if(render instanceof JsonKyStruct){
+        if(value instanceof JsonKyStruct){
             return JSONKYSTRUCTPARSER;
-        }else if(render instanceof JsonIdxStruct){
+        }else if(value instanceof JsonIdxStruct){
             return JSONIDXSTRUCTPARSER;
-        }else if(render instanceof JsonValue){
+        }else if(value instanceof JsonValue){
             return JSONVALUEDPARSER;
         }else {
             throw new RuntimeException();
@@ -71,19 +67,19 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void parse() {
             component.value(config.value2String(getJsonValued().getCached()),level);
-            render = getJsonValued().getParent();
+            value = getJsonValued().getParent();
         }
     }
 
-    public class JsonKyStructParser implements Parser ,Structure {
+    public class JsonKyStructParser implements Parser ,Enumeration {
 
         @Override
         public void parse() {
             if(validateAndStart()){
                 do{
-                    StructSwap.Transfer transfer = getJsonKyStruct().peeking();
-                    component.indexing(transfer.indexing(),level);
-                    render = transfer.value();
+                    StructSwap.Entry entry = getStructSwap().peeking();
+                    component.indexing(entry.indexing(),level);
+                    value = entry.value();
                    peek().parse();
                 }while (hasNext());
             }
@@ -93,12 +89,12 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public boolean validateAndStart() {
             component.openObject(level++);
-            return getJsonKyStruct().notEmptyAndPeekStart();
+            return getStructSwap().notEmptyAndPeekStart();
         }
 
         @Override
         public boolean hasNext() {
-            boolean b = getJsonKyStruct().hasNext();
+            boolean b = getStructSwap().hasNext();
             if(b){
                 component.toNext(level);
             }
@@ -108,19 +104,19 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeObject(--level);
-            render = getJsonKyStruct().getParent();
+            value = value.getParent();
         }
     }
 
 
-    public class JsonIdxStructParser implements Parser ,Structure {
+    public class JsonIdxStructParser implements Parser ,Enumeration {
 
         @Override
         public void parse() {
             if(validateAndStart()){
                 do{
-                    StructSwap.Transfer transfer = getJsonIdxStruct().peeking();
-                    render = transfer.value();
+                    StructSwap.Entry entry = getStructSwap().peeking();
+                    value = entry.value();
                     peek().parse();
                 }while (hasNext());
             }
@@ -130,12 +126,12 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public boolean validateAndStart() {
             component.openArray(level++);
-            return getJsonIdxStruct().notEmptyAndPeekStart();
+            return getStructSwap().notEmptyAndPeekStart();
         }
 
         @Override
         public boolean hasNext() {
-            boolean b = getJsonIdxStruct().hasNext();
+            boolean b = getStructSwap().hasNext();
             if(b){
                 component.toNext(level);
             }
@@ -145,7 +141,7 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeArray(--level);
-            render = getJsonIdxStruct().getParent();
+            value = value.getParent();
         }
     }
 

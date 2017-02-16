@@ -21,9 +21,9 @@ public class JsonMap extends JsonKyStruct<Map> {
     }
 
     @Override
-    public Transfer peeking() {
+    public Entry peeking() {
         Map.Entry entry = iterator.next();
-        return new TransferForKy(String.valueOf(entry.getKey()),entry.getValue());
+        return new EntryImpl(String.valueOf(entry.getKey()),entry.getValue());
     }
 
     @Override

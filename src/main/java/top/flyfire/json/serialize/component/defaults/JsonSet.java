@@ -24,8 +24,8 @@ public class JsonSet extends JsonIdxStruct<Set>{
     }
 
     @Override
-    public Transfer peeking() {
-        return new TransferForIdx(cursor,iterator.next());
+    public Entry peeking() {
+        return new EntryImpl(cursor,iterator.next());
     }
 
     @Override

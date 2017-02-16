@@ -2,7 +2,7 @@ package top.flyfire.json.deserialize;
 
 import top.flyfire.json.Parser;
 import top.flyfire.json.Peeker;
-import top.flyfire.json.Structure;
+import top.flyfire.json.Enumeration;
 import top.flyfire.json.Token;
 import top.flyfire.json.JsonComponent;
 import top.flyfire.json.deserialize.exception.UnexpectedEndTokenException;
@@ -166,7 +166,7 @@ public class Deserializer implements Peeker,Parser {
         return ++cursor < cursorBound;
     }
 
-    private class ObjectParser implements Parser, Structure, Peeker {
+    private class ObjectParser implements Parser, Enumeration, Peeker {
 
         private Parser PRIMITIVEPARSER;
 
@@ -242,7 +242,7 @@ public class Deserializer implements Peeker,Parser {
         }
     }
 
-    private class ArrayParser implements Parser, Structure, Peeker {
+    private class ArrayParser implements Parser, Enumeration, Peeker {
 
         private Parser PRIMITIVEPARSER;
 

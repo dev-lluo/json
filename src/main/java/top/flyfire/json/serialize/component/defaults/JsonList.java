@@ -21,8 +21,8 @@ public class JsonList extends JsonIdxStruct<List> {
     }
 
     @Override
-    public Transfer peeking() {
-        return new TransferForIdx(cursor,cached.get(cursor));
+    public Entry peeking() {
+        return new EntryImpl(cursor,cached.get(cursor));
     }
 
     @Override

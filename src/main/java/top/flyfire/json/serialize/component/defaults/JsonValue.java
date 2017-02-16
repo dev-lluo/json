@@ -21,7 +21,7 @@ public class JsonValue<V> extends JsonSwap<V,JsonValue> {
         return super.getParent();
     }
 
-    public static JsonValue buildRender(Object value, JsonValue parent){
+    public static JsonValue buildValue(Object value, JsonValue parent){
         if(value == null){
             return new JsonValue(value,parent);
         }else if(value instanceof String){

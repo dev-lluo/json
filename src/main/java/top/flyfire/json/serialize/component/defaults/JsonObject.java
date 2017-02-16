@@ -1,6 +1,5 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.common.reflect.metainfo.ClassMetaInfo;
 import top.flyfire.common.reflect.metainfo.FieldMetaInfo;
@@ -10,7 +9,7 @@ import java.util.Enumeration;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonObject extends JsonKyStruct {
+public class JsonObject extends JsonKyStruct<Object> {
 
     Enumeration<FieldMetaInfo> fieldMetaInfoEnumeration;
 
@@ -26,9 +25,9 @@ public class JsonObject extends JsonKyStruct {
     }
 
     @Override
-    public Transfer peeking() {
+    public Entry peeking() {
         FieldMetaInfo fieldMetaInfo = fieldMetaInfoEnumeration.nextElement();
-        return new TransferForKy(fieldMetaInfo.getFieldName(),fieldMetaInfo.invokeGetter(cached));
+        return new EntryImpl(fieldMetaInfo.getFieldName(),fieldMetaInfo.invokeGetter(cached));
     }
 
     @Override

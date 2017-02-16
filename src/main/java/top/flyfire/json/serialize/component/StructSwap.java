@@ -9,11 +9,11 @@ public interface StructSwap {
 
     boolean notEmptyAndPeekStart();
 
-    Transfer peeking();
+    Entry peeking();
 
     boolean hasNext();
 
-    interface Transfer<I> {
+    interface Entry<I> {
 
         I indexing();
 
