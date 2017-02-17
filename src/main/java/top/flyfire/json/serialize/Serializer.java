@@ -62,12 +62,18 @@ public class Serializer implements Peeker ,Parser {
         }
     }
 
+
+    private void flush(){
+        JsonValue temp = value;
+        value = temp.getParent();
+        temp.destroy();
+    }
+
     public class JsonValuedParser implements Parser{
 
         @Override
         public void parse() {
             component.value(config.value2String(getJsonValued().getCached()),level);
-            value = getJsonValued().getParent();
         }
     }
 
@@ -80,7 +86,7 @@ public class Serializer implements Peeker ,Parser {
                     StructSwap.Entry entry = getStructSwap().peeking();
                     component.indexing(entry.indexing(),level);
                     value = entry.value();
-                   peek().parse();
+                    Serializer.this.parse();
                 }while (hasNext());
             }
             validateAndEnd();
@@ -94,6 +100,7 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean hasNext() {
+            flush();
             boolean b = getStructSwap().hasNext();
             if(b){
                 component.toNext(level);
@@ -104,7 +111,6 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeObject(--level);
-            value = value.getParent();
         }
     }
 
@@ -117,7 +123,7 @@ public class Serializer implements Peeker ,Parser {
                 do{
                     StructSwap.Entry entry = getStructSwap().peeking();
                     value = entry.value();
-                    peek().parse();
+                    Serializer.this.parse();
                 }while (hasNext());
             }
             validateAndEnd();
@@ -131,6 +137,7 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean hasNext() {
+            flush();
             boolean b = getStructSwap().hasNext();
             if(b){
                 component.toNext(level);
@@ -141,7 +148,6 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void validateAndEnd() {
             component.closeArray(--level);
-            value = value.getParent();
         }
     }
 
