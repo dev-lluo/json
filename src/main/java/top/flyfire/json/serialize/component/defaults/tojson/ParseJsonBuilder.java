@@ -33,6 +33,7 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
 
     @Override
     public boolean markIndex(JsonMarkIndex mark) {
+        System.out.println(mark.getPath());
         if(mark.isForObject()){
             builder.append(mark.getIndex());
             builder.append(Token.OBJECT_P2V);

@@ -367,7 +367,7 @@ public class Deserializer implements Peeker,Parser {
 
     private void markValue(boolean hasWrapper,boolean isNull,boolean isUndefined){
         if(breakOff) return;
-        markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+        markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,isNull,isUndefined));
     }
 
     private void markOpen(boolean forObject){
