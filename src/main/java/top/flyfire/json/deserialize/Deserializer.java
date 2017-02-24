@@ -1,12 +1,12 @@
 package top.flyfire.json.deserialize;
 
-import top.flyfire.json.Parser;
-import top.flyfire.json.Peeker;
-import top.flyfire.json.Enumeration;
-import top.flyfire.json.Token;
-import top.flyfire.json.JsonComponent;
+import top.flyfire.common.StringUtils;
+import top.flyfire.json.*;
 import top.flyfire.json.deserialize.exception.UnexpectedEndTokenException;
 import top.flyfire.json.deserialize.exception.UnexpectedTokenException;
+import top.flyfire.json.mark.JsonMarkBuilder;
+import top.flyfire.json.mark.JsonMarkIndex;
+import top.flyfire.json.mark.JsonMarkStruct;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -17,6 +17,10 @@ public class Deserializer implements Peeker,Parser {
     private String source;
 
     private JsonComponent component;
+
+    private JsonMarkBuilder markBuilder;
+
+    private JsonRoute route;
 
     private int cursor, cursorBound, level;
 
@@ -31,6 +35,17 @@ public class Deserializer implements Peeker,Parser {
         this.cursor = this.level = 0;
         this.cursorBound = source.length();
         this.component = component;
+        STRUCTEDPARSER = new ObjectParser();
+        INDEXEDPARSER = new ArrayParser();
+        PRIMITIVEPARSER = new PrimitiveParser();
+    }
+
+
+    public Deserializer(String source, JsonMarkBuilder markBuilder) {
+        this.source = source;
+        this.cursor = this.level = 0;
+        this.cursorBound = source.length();
+        this.markBuilder = markBuilder;
         STRUCTEDPARSER = new ObjectParser();
         INDEXEDPARSER = new ArrayParser();
         PRIMITIVEPARSER = new PrimitiveParser();
@@ -182,7 +197,10 @@ public class Deserializer implements Peeker,Parser {
 
                     key:
                     {
-                        component.indexing(tokenRead(':'), level);
+                        //component.indexing(tokenRead(':'), level);
+                        String index = tokenRead(':');
+                        route.push("."+index);
+                        markBuilder.markIndex(new JsonMarkIndex(level,route.get(),index,true));
                         roll();
                     }
 
@@ -198,7 +216,8 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public void validateAndEnd() {
-            component.closeObject(--level);
+            //component.closeObject(--level);
+            markBuilder.markClose(new JsonMarkStruct(--level,route.get(),true));
         }
 
         @Override

@@ -1,6 +1,6 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.JsonSwap;
+import top.flyfire.json.JsonNode;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonValue<V> extends JsonSwap<V,JsonValue> {
+public class JsonValue<V> extends JsonNode<V,JsonValue> {
 
     public JsonValue(V cached, JsonValue o) {
         super(cached, o);
