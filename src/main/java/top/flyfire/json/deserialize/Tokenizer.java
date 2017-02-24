@@ -8,19 +8,19 @@ import top.flyfire.json.Token;
 public final class Tokenizer implements Token {
 
     public static boolean isArrayStart(char token){
-        return INX_START == token;
+        return ARRAY_OPEN == token;
     }
 
     public static boolean isArrayEnd(char token){
-        return INX_END == token;
+        return ARRAY_CLOSE == token;
     }
 
     public static boolean isObjectStart(char token){
-        return STC_START == token;
+        return OBJECT_OPEN == token;
     }
 
     public static boolean isObjectEnd(char token){
-        return STC_END == token;
+        return OBJECT_CLOSE == token;
     }
 
     public static boolean isNext(char token){
@@ -28,7 +28,7 @@ public final class Tokenizer implements Token {
     }
 
     public static boolean isPrp2Val(char token){
-        return STC_K2V == token;
+        return OBJECT_P2V == token;
     }
 
     public static boolean isInvisibleChar(char token){

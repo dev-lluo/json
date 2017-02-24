@@ -4,19 +4,19 @@ package top.flyfire.json;
  * Created by shyy_work on 2016/6/16.
  */
 public interface Token {
-    char INX_START = '[',
-    INX_END = ']',
-    STC_START = '{',
-    STC_K2V = ':',
-    STC_END = '}',
+    char ARRAY_OPEN = '[',
+    ARRAY_CLOSE = ']',
+    OBJECT_OPEN = '{',
+    OBJECT_P2V = ':',
+    OBJECT_CLOSE = '}',
     NEXT = ',',
     SPACE = ' ',
     TAB = '\t',
     RLINE = '\r',
     NLINE = '\n',
     ESCAPE = '\\',
-    S_QUOTE = '\'',
-    D_QUOTE = '\"',
+    SINGLE_QUOTE = '\'',
+    DOUBLE_QUOTE = '\"',
     EMPTY = '\0';
 
 }

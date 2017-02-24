@@ -11,9 +11,12 @@ public class JsonMarkValue extends JsonMark {
 
     private boolean isUndefined;
 
-    public JsonMarkValue(int level, String path, Object value, boolean isNull, boolean isUndefined) {
+    private boolean hasWrapper;
+
+    public JsonMarkValue(int level, String path, Object value,boolean hasWrapper, boolean isNull, boolean isUndefined) {
         super(level, path);
         this.value = value;
+        this.hasWrapper = hasWrapper;
         this.isNull = isNull;
         this.isUndefined = isUndefined;
     }
@@ -28,5 +31,9 @@ public class JsonMarkValue extends JsonMark {
 
     public boolean isUndefined() {
         return isUndefined;
+    }
+
+    public boolean hasWrapper() {
+        return hasWrapper;
     }
 }

@@ -1,6 +1,7 @@
 package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
+import top.flyfire.json.deserialize.component.defaults.format.FormatBuilder;
 import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
@@ -17,9 +18,9 @@ public class Json {
 
 
     public static String format(String json){
-        FormatCpt formatCpt = new FormatCpt();
-        Json.deserialize(json,formatCpt);
-        return formatCpt.result();
+        FormatBuilder formatBuilder = new FormatBuilder();
+        new Deserializer(json,formatBuilder).parse();
+        return formatBuilder.get();
     }
 
     public static Object deserialize(String json){

@@ -1,12 +1,9 @@
 package top.flyfire.json.deserialize;
 
-import top.flyfire.common.StringUtils;
 import top.flyfire.json.*;
 import top.flyfire.json.deserialize.exception.UnexpectedEndTokenException;
 import top.flyfire.json.deserialize.exception.UnexpectedTokenException;
-import top.flyfire.json.mark.JsonMarkBuilder;
-import top.flyfire.json.mark.JsonMarkIndex;
-import top.flyfire.json.mark.JsonMarkStruct;
+import top.flyfire.json.mark.*;
 
 /**
  * Created by shyy_work on 2016/6/21.
@@ -21,6 +18,12 @@ public class Deserializer implements Peeker,Parser {
     private JsonMarkBuilder markBuilder;
 
     private JsonRoute route;
+
+    private  StringBuilder markCached;
+
+    private String mark;
+
+    private boolean hasWrapper;
 
     private int cursor, cursorBound, level;
 
@@ -46,6 +49,8 @@ public class Deserializer implements Peeker,Parser {
         this.cursor = this.level = 0;
         this.cursorBound = source.length();
         this.markBuilder = markBuilder;
+        this.route = new JsonRoute();
+        this.markCached = new StringBuilder();
         STRUCTEDPARSER = new ObjectParser();
         INDEXEDPARSER = new ArrayParser();
         PRIMITIVEPARSER = new PrimitiveParser();
@@ -81,53 +86,53 @@ public class Deserializer implements Peeker,Parser {
     }
 
 
-    private String tokenRead(int... endToken) {
+    private boolean tokenRead(int... endToken) {
         char token = '\0';
         int quoteWrapper,
                 escape = 0; //0,1
-        StringBuilder builder = new StringBuilder();
+        if(null!=mark)markCached.delete(0, markCached.length());
         readFirst:
         {
-            for (token = fetch(); !notIn(token = fetch(), ' '); roll()) ;
-            if (token == '"' || token == '\'') quoteWrapper = token;
+            for (token = fetch(); !notIn(token = fetch(), Token.SPACE); roll()) ;
+            if (token == Token.DOUBLE_QUOTE || token == Token.SINGLE_QUOTE) quoteWrapper = token;
             else if(!notIn(token,endToken)) throw new UnexpectedTokenException(source,cursor);
             else quoteWrapper = 0;
         }
         read2End:
         {
-            if (quoteWrapper > 0) {
+            if (hasWrapper = (quoteWrapper > 0)) {
                 while (roll()) {
                     token = fetch();
                     if (escape == 0) {
-                        if (token == '\\') {
+                        if (token == Token.ESCAPE) {
                             escape = 1;
                         } else if ((token ^ quoteWrapper) == 0) {
                             quoteWrapper = 0;
                             break;
                         } else {
-                            builder.append(token);
+                            markCached.append(token);
                         }
                     } else {
                         if (token == 't') {
-                            builder.append('\t');
+                            markCached.append('\t');
                         } else if (token == 'r') {
-                            builder.append('\r');
+                            markCached.append('\r');
                         } else if (token == 'n') {
-                            builder.append('\n');
+                            markCached.append('\n');
                         } else if (token == 'f') {
-                            builder.append('\f');
+                            markCached.append('\f');
                         } else if (token == 'b') {
-                            builder.append('\b');
+                            markCached.append('\b');
                         } else if (token == '/') {
-                            builder.append('/');
+                            markCached.append('/');
                         } else if (token == '\\') {
-                            builder.append('\\');
+                            markCached.append('\\');
                         } else if (token == '"') {
-                            builder.append('"');
+                            markCached.append('"');
                         } else if (token == '\'') {
-                            builder.append('\'');
+                            markCached.append('\'');
                         } else {
-                            builder.append(token);
+                            markCached.append(token);
                         }
                         escape = 0;
                     }
@@ -140,13 +145,13 @@ public class Deserializer implements Peeker,Parser {
                 ;
             } else {
                 boolean notSkip = true;
-                builder.append(token);
+                markCached.append(token);
                 while (roll() && notIn(token = fetch(), endToken)) {
                     if(notSkip) {
                         if(Tokenizer.isInvisibleChar(token)){
                             notSkip = false;
                         }else {
-                            builder.append(token);
+                            markCached.append(token);
                         }
                     }else{
                         if(Tokenizer.isInvisibleChar(token))
@@ -162,7 +167,8 @@ public class Deserializer implements Peeker,Parser {
                 throw new UnexpectedEndTokenException(source);
             }
         }
-        return builder.toString();
+        mark = markCached.toString();
+        return hasWrapper;
     }
 
     private char fetch() {
@@ -197,10 +203,8 @@ public class Deserializer implements Peeker,Parser {
 
                     key:
                     {
-                        //component.indexing(tokenRead(':'), level);
-                        String index = tokenRead(':');
-                        route.push("."+index);
-                        markBuilder.markIndex(new JsonMarkIndex(level,route.get(),index,true));
+                        tokenRead(':');
+                        markBuilder.markIndex(new JsonMarkIndex(route.pushObjectKey(mark),route.get(),mark,true));
                         roll();
                     }
 
@@ -216,27 +220,26 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public void validateAndEnd() {
-            //component.closeObject(--level);
-            markBuilder.markClose(new JsonMarkStruct(--level,route.get(),true));
+            markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),true));
         }
 
         @Override
         public boolean hasNext() {
             char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before comma
             roll();
-            if (Tokenizer.isObjectEnd(dest)) {
-                return false;
-            } else if (Tokenizer.isNext(dest)) {
-                component.toNext(level);
-                return true;
-            } else {
+            boolean end = Tokenizer.isObjectEnd(dest),
+            next = Tokenizer.isNext(dest);
+            if(end||next){
+                markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),next));
+                return next;
+            }else{
                 throw new UnexpectedTokenException(source,cursor);
             }
         }
 
         @Override
         public boolean validateAndStart() {
-            component.openObject(level++);
+            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),true));
             char dest = fetchIgnoreisInvisibleChar();
             if (Tokenizer.isObjectEnd(dest)) {
                 roll();
@@ -277,7 +280,7 @@ public class Deserializer implements Peeker,Parser {
                 do {
                     index:
                     {
-                        component.indexing(i++, level);
+                        markBuilder.markIndex(new JsonMarkIndex(route.pushArrayIndex(i),route.get(),i++,false));
                     }
                     value:
                     {
@@ -291,18 +294,18 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public void validateAndEnd() {
-            component.closeArray(--level);
+            markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),false));
         }
 
         @Override
         public boolean hasNext() {
             char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before comma
             roll();
-            if (Tokenizer.isArrayEnd(dest)) {
-                return false;
-            } else if (Tokenizer.isNext(dest)) {
-                component.toNext(level);
-                return true;
+            boolean end = Tokenizer.isArrayEnd(dest),
+                    next = Tokenizer.isNext(dest);
+            if (end||next) {
+                markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),next));
+                return next;
             } else {
                 throw new UnexpectedTokenException(source,cursor);
             }
@@ -310,7 +313,7 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public boolean validateAndStart() {
-            component.openArray(level++);
+            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),false));
             char dest;
             if (Tokenizer.isArrayEnd(dest = fetchIgnoreisInvisibleChar())) {
                 roll();
@@ -338,21 +341,26 @@ public class Deserializer implements Peeker,Parser {
     private class PrimitiveParser implements Parser {
         @Override
         public void parse() {
-            component.value(source, level);
+            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),source,false,false,false));
+            route.pop();
         }
     }
 
     private class ObjectPrimitiveParser implements Parser {
         @Override
         public void parse() {
-            component.value(tokenRead(Token.NEXT, Token.STC_END), level);
+            tokenRead(Token.NEXT, Token.OBJECT_CLOSE);
+            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+            route.pop();
         }
     }
 
     private class IndexedPrimitiveParser implements Parser {
         @Override
         public void parse() {
-            component.value(tokenRead(Token.NEXT, Token.INX_END), level);
+            tokenRead(Token.NEXT, Token.ARRAY_CLOSE);
+            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+            route.pop();
         }
     }
 

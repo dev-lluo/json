@@ -10,26 +10,40 @@ public class JsonRoute {
 
     private String[] caches;
 
-    private int cursor;
+    private int level;
 
     public JsonRoute(){
+        level = 0;
         caches = new String[16];
         push("$");
     }
 
-    public void push(String nodeName){
-        if(cursor==caches.length) {
-            resize();
-        }
-        caches[cursor++] = nodeName;
+    public int pushArrayIndex(int index){
+        return push(StringUtils.merge("[",index,"]"));
     }
 
-    public void pop(){
-        cursor--;
+    public int pushObjectKey(String key){
+        return push(StringUtils.merge(".",key));
+    }
+
+    private int push(String nodeName){
+        if(level ==caches.length) {
+            resize();
+        }
+        caches[level] = nodeName;
+        return level++;
+    }
+
+    public int pop(){
+        return --level;
     }
 
     public String get(){
-        return StringUtils.megre(caches,cursor);
+        return StringUtils.megre(caches, level);
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     private void resize(){

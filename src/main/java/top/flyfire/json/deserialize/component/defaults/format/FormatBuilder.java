@@ -8,31 +8,33 @@ import top.flyfire.json.mark.*;
  */
 public class FormatBuilder implements JsonMarkBuilder<String> {
 
-    StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder(128);
 
     @Override
     public void markOpen(JsonMarkStruct mark) {
         if(mark.isForObject()){
-            builder.append(Token.STC_START);
+            builder.append(Token.OBJECT_OPEN);
         }else{
-            builder.append(Token.INX_START);
+            builder.append(Token.ARRAY_OPEN);
         }
     }
 
     @Override
     public void markClose(JsonMarkStruct mark) {
+        newLine(mark.getLevel());
         if(mark.isForObject()){
-            builder.append(Token.STC_END);
+            builder.append(Token.OBJECT_CLOSE);
         }else{
-            builder.append(Token.INX_END);
+            builder.append(Token.ARRAY_CLOSE);
         }
     }
 
     @Override
     public void markIndex(JsonMarkIndex mark) {
+        newLine(mark.getLevel());
         if(mark.isForObject()){
             builder.append(mark.getIndex());
-            builder.append(Token.STC_K2V);
+            builder.append(Token.OBJECT_P2V);
         }
     }
 
@@ -50,13 +52,12 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     @Override
     public void markNext(JsonMarkNext mark) {
         if(mark.hasNext()){
-            builder.append("\r\n");
-            appendTab(mark.getLevel());
             builder.append(",");
         }
     }
 
-    private void appendTab(int count){
+    private void newLine(int count){
+        builder.append("\r\n");
         for(int i = 0;i<count;i++){
             builder.append('\t');
         }

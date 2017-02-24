@@ -9,7 +9,7 @@ import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
  */
 public class JsonTest {
 
-    private String jsonData = "   {abcd:   123       ,  \"b\" :    \"123\"\r\n,  c:  \"2015-12-12 12:12:12\"  ,   d    :  [1,2,3  , [ 4,5]]  ,e:456,f:[  ],g:{ }}";
+    private String jsonData = "   {abcd:   123       ,  \"b\" :    \"123\"\r\n,  c:  \"2015-12-12 12:12:12\"  ,   d    :  [1,2,3  , [ 4,5]]  ,e:456,f:[  ],g:{ },h:{a:123}}";
 
     @Test
     public void testFormat() throws Exception {
