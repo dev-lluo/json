@@ -2,12 +2,12 @@ package top.flyfire.json;
 
 import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.deserialize.component.defaults.format.FormatBuilder;
-import top.flyfire.json.deserialize.component.defaults.format.FormatCpt;
-import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectCpt;
-import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
+import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectBuilder;
+import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectBuilder;
 import top.flyfire.json.deserialize.Deserializer;
+import top.flyfire.json.mark.JsonMarkBuilder;
 import top.flyfire.json.serialize.Serializer;
-import top.flyfire.json.serialize.component.defaults.tojson.JsonBuilder;
+import top.flyfire.json.serialize.component.defaults.tojson.ParseJsonBuilder;
 
 import java.lang.reflect.Type;
 
@@ -24,29 +24,29 @@ public class Json {
     }
 
     public static Object deserialize(String json){
-        ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
-        Json.deserialize(json,parseJavaObjectCpt);
-        return parseJavaObjectCpt.result();
+        ParseJavaObjectBuilder builder = new ParseJavaObjectBuilder();
+        Json.deserialize(json,builder);
+        return builder.get();
     }
 
     public static Object deserialize(String json, Type type){
-        HighParseJavaObjectCpt highParseJavaObjectCpt = new HighParseJavaObjectCpt(ReflectUtils.getMetaInfo(type));
-        Json.deserialize(json,highParseJavaObjectCpt);
-        return  highParseJavaObjectCpt.result();
+        HighParseJavaObjectBuilder builder = new HighParseJavaObjectBuilder(ReflectUtils.getMetaInfo(type));
+        Json.deserialize(json,builder);
+        return  builder.get();
     }
 
     public static String serialize(Object object){
-        JsonBuilder component = new JsonBuilder();
-        Json.serialize(object,component);
-        return component.result();
+        ParseJsonBuilder builder = new ParseJsonBuilder();
+        Json.serialize(object,builder);
+        return builder.get();
     }
 
-    public static void deserialize(String json, JsonComponent component){
-        Json.exec(new Deserializer(json,component));
+    public static void deserialize(String json, JsonMarkBuilder markBuilder){
+        Json.exec(new Deserializer(json,markBuilder));
     }
 
-    public static void serialize(Object object, JsonComponent component){
-        Json.exec(new Serializer(object,component));
+    public static void serialize(Object object, JsonMarkBuilder markBuilder){
+        Json.exec(new Serializer(object,markBuilder));
     }
 
     public static void exec(Parser parser){

@@ -2,12 +2,12 @@ package top.flyfire.json.deserialize.component.defaults;
 
 import top.flyfire.common.ObjectUtils;
 import top.flyfire.json.JsonNode;
-import top.flyfire.json.deserialize.component.DStructSwap;
+import top.flyfire.json.deserialize.component.DStructNode;
 
 /**
  * Created by shyy_work on 2017/2/15.
  */
-public class AbstractValueData<V,P extends JsonNode & DStructSwap> extends JsonNode<V,P> {
+public class AbstractValueData<V,P extends JsonNode & DStructNode> extends JsonNode<V,P> {
 
     public AbstractValueData(V cached, P p) {
         super(cached, p);

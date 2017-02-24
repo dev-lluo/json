@@ -5,6 +5,8 @@ import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.deserialize.Deserializer;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectBuilder;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectBuilder;
+import top.flyfire.json.serialize.Serializer;
+import top.flyfire.json.serialize.component.defaults.tojson.ParseJsonBuilder;
 
 /**
  * Created by shyy_work on 2017/2/24.
@@ -17,7 +19,11 @@ public class RebuildWithMarkTest {
     public void testSimpleParse(){
         ParseJavaObjectBuilder parseJavaObjectBuilder = new ParseJavaObjectBuilder();
         new Deserializer(jsonData,parseJavaObjectBuilder).parse();
-        System.out.print(parseJavaObjectBuilder.get());
+        Object object = parseJavaObjectBuilder.get();
+        System.out.println(object);
+        ParseJsonBuilder jsonBuilder2 = new ParseJsonBuilder();
+        new Serializer(object,jsonBuilder2).parse();
+        System.out.println(jsonBuilder2.get());
     }
 
     @Test

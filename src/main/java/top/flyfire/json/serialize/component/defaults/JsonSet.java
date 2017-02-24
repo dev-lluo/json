@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonSet extends JsonIdxStruct<Set>{
+public class JsonSet extends JsonArrayStruct<Set> {
 
     protected Iterator iterator;
 

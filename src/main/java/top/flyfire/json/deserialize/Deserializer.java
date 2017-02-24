@@ -13,8 +13,6 @@ public class Deserializer implements Peeker,Parser {
 
     private String source;
 
-    private JsonComponent component;
-
     private JsonMarkBuilder markBuilder;
 
     private JsonRoute route;
@@ -34,17 +32,6 @@ public class Deserializer implements Peeker,Parser {
     private Parser INDEXEDPARSER;
 
     private Parser PRIMITIVEPARSER;
-
-    public Deserializer(String source, JsonComponent component) {
-        this.source = source;
-        this.cursor = this.level = 0;
-        this.cursorBound = source.length();
-        this.component = component;
-        STRUCTEDPARSER = new ObjectParser();
-        INDEXEDPARSER = new ArrayParser();
-        PRIMITIVEPARSER = new PrimitiveParser();
-    }
-
 
     public Deserializer(String source, JsonMarkBuilder markBuilder) {
         this.source = source;
@@ -226,6 +213,7 @@ public class Deserializer implements Peeker,Parser {
         @Override
         public void validateAndEnd() {
             markClose(true);
+            route.pop();
         }
 
         @Override
@@ -306,6 +294,7 @@ public class Deserializer implements Peeker,Parser {
         @Override
         public void validateAndEnd() {
             markClose(false);
+            route.pop();
         }
 
         @Override
@@ -388,7 +377,7 @@ public class Deserializer implements Peeker,Parser {
 
     private void markClose(boolean forObject){
         if(breakOff) return;
-        markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),forObject));
+        markBuilder.markClose(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
     }
 
     private boolean markIndex(Object index,boolean forObject){

@@ -9,7 +9,7 @@ import java.util.Enumeration;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonObject extends JsonKyStruct<Object> {
+public class JsonObject extends JsonObjectStruct<Object> {
 
     Enumeration<FieldMetaInfo> fieldMetaInfoEnumeration;
 

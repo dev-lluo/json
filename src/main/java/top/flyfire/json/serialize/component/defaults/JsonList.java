@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonList extends JsonIdxStruct<List> {
+public class JsonList extends JsonArrayStruct<List> {
 
     protected int length,cursor;
 

@@ -2,7 +2,6 @@ package top.flyfire.json;
 
 import org.junit.Test;
 import top.flyfire.common.reflect.RawType;
-import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectCpt;
 
 /**
  * Created by flyfire[dev.lluo@outlook.com] on 2016/6/21.
@@ -17,14 +16,6 @@ public class JsonTest {
         System.out.println(json);
     }
 
-    @Test
-    public void testParse() throws Exception {
-        ParseJavaObjectCpt parseJavaObjectCpt = new ParseJavaObjectCpt();
-        Json.deserialize(jsonData,parseJavaObjectCpt);
-        Object object = parseJavaObjectCpt.result();
-        System.out.println(object);
-        System.out.println(Json.serialize(object));
-    }
 
     @Test
     public void testHighParse() throws Exception {

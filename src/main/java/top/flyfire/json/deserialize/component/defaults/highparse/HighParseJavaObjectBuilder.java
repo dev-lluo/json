@@ -36,7 +36,6 @@ public class HighParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
 
     @Override
     public boolean markIndex(JsonMarkIndex mark) {
-        System.out.println(mark.getPath());
         return  null == (metaInfo = ((HighStructValueData) data).indexing(mark.getIndex()));
     }
 

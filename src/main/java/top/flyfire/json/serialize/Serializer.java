@@ -2,9 +2,10 @@ package top.flyfire.json.serialize;
 
 
 import top.flyfire.json.*;
-import top.flyfire.json.serialize.component.StructSwap;
-import top.flyfire.json.serialize.component.defaults.JsonIdxStruct;
-import top.flyfire.json.serialize.component.defaults.JsonKyStruct;
+import top.flyfire.json.mark.*;
+import top.flyfire.json.serialize.component.StructNode;
+import top.flyfire.json.serialize.component.defaults.JsonArrayStruct;
+import top.flyfire.json.serialize.component.defaults.JsonObjectStruct;
 import top.flyfire.json.serialize.component.defaults.JsonValue;
 
 /**
@@ -14,23 +15,18 @@ public class Serializer implements Peeker ,Parser {
 
     private JsonValue value;
 
-    private JsonComponent component;
+    private JsonMarkBuilder markBuilder;
 
-    private SerializeConfig config;
+    private JsonRoute route;
 
-    private int level;
+    private boolean breakOff;
 
     private Parser JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
 
-    public Serializer(Object object, JsonComponent component) {
-        this(object,component,SerializeConfig.DEFAULT);
-    }
-
-    public Serializer(Object object, JsonComponent component,SerializeConfig config){
-        this.level = 0;
-        this.component = component;
+    public Serializer(Object object, JsonMarkBuilder markBuilder){
+        this.markBuilder = markBuilder;
+        this.route = new JsonRoute();
         value = JsonValue.buildValue(object,null);
-        this.config = config;
         JSONVALUEDPARSER = new JsonValuedParser();
         JSONKYSTRUCTPARSER = new JsonKyStructParser();
         JSONIDXSTRUCTPARSER = new JsonIdxStructParser();
@@ -40,8 +36,8 @@ public class Serializer implements Peeker ,Parser {
         return (JsonValue) value;
     }
 
-    private StructSwap getStructSwap(){
-        return (StructSwap) value;
+    private StructNode getStructSwap(){
+        return (StructNode) value;
     }
 
     @Override
@@ -51,9 +47,9 @@ public class Serializer implements Peeker ,Parser {
 
     @Override
     public Parser peek() {
-        if(value instanceof JsonKyStruct){
+        if(value instanceof JsonObjectStruct){
             return JSONKYSTRUCTPARSER;
-        }else if(value instanceof JsonIdxStruct){
+        }else if(value instanceof JsonArrayStruct){
             return JSONIDXSTRUCTPARSER;
         }else if(value instanceof JsonValue){
             return JSONVALUEDPARSER;
@@ -73,7 +69,7 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public void parse() {
-            component.value(config.value2String(getJsonValued().getCached()),level);
+            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),getJsonValued().getCached(),false,false,false));
         }
     }
 
@@ -83,8 +79,9 @@ public class Serializer implements Peeker ,Parser {
         public void parse() {
             if(validateAndStart()){
                 do{
-                    StructSwap.Entry entry = getStructSwap().peeking();
-                    component.indexing(entry.indexing(),level);
+                    StructNode.Entry entry = getStructSwap().peeking();
+                    route.pushObjectKey((String) entry.indexing());
+                    markBuilder.markIndex(new JsonMarkIndex(route.getLevel(),route.get(),entry.indexing(),true));
                     value = entry.value();
                     Serializer.this.parse();
                 }while (hasNext());
@@ -94,7 +91,7 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean validateAndStart() {
-            component.openObject(level++);
+            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),true));
             return getStructSwap().notEmptyAndPeekStart();
         }
 
@@ -102,15 +99,13 @@ public class Serializer implements Peeker ,Parser {
         public boolean hasNext() {
             flush();
             boolean b = getStructSwap().hasNext();
-            if(b){
-                component.toNext(level);
-            }
+            markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),b));
             return b;
         }
 
         @Override
         public void validateAndEnd() {
-            component.closeObject(--level);
+            markBuilder.markClose(new JsonMarkStruct(route.getLevel(),route.get(),true));
         }
     }
 
@@ -121,7 +116,9 @@ public class Serializer implements Peeker ,Parser {
         public void parse() {
             if(validateAndStart()){
                 do{
-                    StructSwap.Entry entry = getStructSwap().peeking();
+                    StructNode.Entry entry = getStructSwap().peeking();
+                    route.pushArrayIndex((int) entry.indexing());
+                    markBuilder.markIndex(new JsonMarkIndex(route.getLevel(),route.get(),entry.indexing(),false));
                     value = entry.value();
                     Serializer.this.parse();
                 }while (hasNext());
@@ -131,7 +128,7 @@ public class Serializer implements Peeker ,Parser {
 
         @Override
         public boolean validateAndStart() {
-            component.openArray(level++);
+            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),false));
             return getStructSwap().notEmptyAndPeekStart();
         }
 
@@ -139,16 +136,15 @@ public class Serializer implements Peeker ,Parser {
         public boolean hasNext() {
             flush();
             boolean b = getStructSwap().hasNext();
-            if(b){
-                component.toNext(level);
-            }
+            markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),b));
             return b;
         }
 
         @Override
         public void validateAndEnd() {
-            component.closeArray(--level);
+            markBuilder.markClose(new JsonMarkStruct(route.getLevel(),route.get(),false));
         }
     }
+
 
 }

@@ -1,11 +1,11 @@
 package top.flyfire.json.deserialize.component.defaults.parse;
 
-import top.flyfire.json.deserialize.component.DStructSwap;
+import top.flyfire.json.deserialize.component.DStructNode;
 
 /**
  * Created by shyy_work on 2016/10/21.
  */
-public abstract class StructValueData<I,V>  extends ValueData<V> implements DStructSwap<I,Void> {
+public abstract class StructValueData<I,V>  extends ValueData<V> implements DStructNode<I,Void> {
 
     protected I index;
 

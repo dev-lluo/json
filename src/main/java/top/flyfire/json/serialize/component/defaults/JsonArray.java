@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonArray extends JsonIdxStruct<Object>{
+public class JsonArray extends JsonArrayStruct<Object> {
 
     private int length,cursor;
 

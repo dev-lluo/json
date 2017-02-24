@@ -1,11 +1,11 @@
 package top.flyfire.json.serialize.component.defaults;
 
-import top.flyfire.json.serialize.component.StructSwap;
+import top.flyfire.json.serialize.component.StructNode;
 
 /**
  * Created by devll on 2017/2/15.
  */
-public abstract class JsonStruct<T,I>  extends JsonValue<T> implements StructSwap {
+public abstract class JsonStruct<T,I>  extends JsonValue<T> implements StructNode {
 
     public JsonStruct(T cached, JsonValue o) {
         super(cached, o);

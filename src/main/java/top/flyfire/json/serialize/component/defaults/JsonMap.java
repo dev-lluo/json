@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by devll on 2016/11/22.
  */
-public class JsonMap extends JsonKyStruct<Map> {
+public class JsonMap extends JsonObjectStruct<Map> {
 
     protected Iterator<Map.Entry> iterator;
 
