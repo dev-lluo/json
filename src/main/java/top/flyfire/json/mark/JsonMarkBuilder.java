@@ -9,7 +9,7 @@ public interface JsonMarkBuilder<Result> {
 
     void markClose(JsonMarkStruct mark);
 
-    void markIndex(JsonMarkIndex mark);
+    boolean markIndex(JsonMarkIndex mark);
 
     void markValue(JsonMarkValue mark);
 

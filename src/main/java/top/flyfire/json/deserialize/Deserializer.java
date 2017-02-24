@@ -25,6 +25,8 @@ public class Deserializer implements Peeker,Parser {
 
     private boolean hasWrapper;
 
+    private boolean breakOff;
+
     private int cursor, cursorBound, level;
 
     private Parser STRUCTEDPARSER;
@@ -199,20 +201,23 @@ public class Deserializer implements Peeker,Parser {
         @Override
         public void parse() {
             if (validateAndStart()) {
+                boolean isBreaker = false;
                 do {
-
                     key:
                     {
                         tokenRead(':');
-                        markBuilder.markIndex(new JsonMarkIndex(route.pushObjectKey(mark),route.get(),mark,true));
+                        route.pushObjectKey(mark);
+                        isBreaker = markIndex(mark,true);
                         roll();
                     }
-
                     value:
                     {
                         peek().parse();
                     }
-
+                    reset:
+                    {
+                        reset(isBreaker);
+                    }
                 } while (hasNext());
             }
             validateAndEnd();
@@ -220,7 +225,7 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public void validateAndEnd() {
-            markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),true));
+            markClose(true);
         }
 
         @Override
@@ -230,7 +235,7 @@ public class Deserializer implements Peeker,Parser {
             boolean end = Tokenizer.isObjectEnd(dest),
             next = Tokenizer.isNext(dest);
             if(end||next){
-                markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),next));
+                markNext(next);
                 return next;
             }else{
                 throw new UnexpectedTokenException(source,cursor);
@@ -239,7 +244,7 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public boolean validateAndStart() {
-            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),true));
+            markOpen(true);
             char dest = fetchIgnoreisInvisibleChar();
             if (Tokenizer.isObjectEnd(dest)) {
                 roll();
@@ -277,14 +282,20 @@ public class Deserializer implements Peeker,Parser {
         public void parse() {
             if (validateAndStart()) {
                 int i = 0;
+                boolean isBreaker = false;
                 do {
                     index:
                     {
-                        markBuilder.markIndex(new JsonMarkIndex(route.pushArrayIndex(i),route.get(),i++,false));
+                        route.pushArrayIndex(i);
+                        isBreaker = markIndex(i++,false);
                     }
                     value:
                     {
                         peek().parse();
+                    }
+                    reset:
+                    {
+                        reset(isBreaker);
                     }
                 } while (hasNext());
             }
@@ -294,7 +305,7 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public void validateAndEnd() {
-            markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),false));
+            markClose(false);
         }
 
         @Override
@@ -304,7 +315,7 @@ public class Deserializer implements Peeker,Parser {
             boolean end = Tokenizer.isArrayEnd(dest),
                     next = Tokenizer.isNext(dest);
             if (end||next) {
-                markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),next));
+                markNext(next);
                 return next;
             } else {
                 throw new UnexpectedTokenException(source,cursor);
@@ -313,7 +324,7 @@ public class Deserializer implements Peeker,Parser {
 
         @Override
         public boolean validateAndStart() {
-            markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),false));
+            markOpen(false);
             char dest;
             if (Tokenizer.isArrayEnd(dest = fetchIgnoreisInvisibleChar())) {
                 roll();
@@ -341,7 +352,8 @@ public class Deserializer implements Peeker,Parser {
     private class PrimitiveParser implements Parser {
         @Override
         public void parse() {
-            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),source,false,false,false));
+            tokenRead(Token.NEXT, Token.ARRAY_CLOSE);
+            markValue(false,false,false);
             route.pop();
         }
     }
@@ -350,7 +362,7 @@ public class Deserializer implements Peeker,Parser {
         @Override
         public void parse() {
             tokenRead(Token.NEXT, Token.OBJECT_CLOSE);
-            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+            markValue(hasWrapper,false,false);
             route.pop();
         }
     }
@@ -359,9 +371,39 @@ public class Deserializer implements Peeker,Parser {
         @Override
         public void parse() {
             tokenRead(Token.NEXT, Token.ARRAY_CLOSE);
-            markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+            markValue(hasWrapper,false,false);
             route.pop();
         }
     }
 
+    private void markValue(boolean hasWrapper,boolean isNull,boolean isUndefined){
+        if(breakOff) return;
+        markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+    }
+
+    private void markOpen(boolean forObject){
+        if(breakOff) return;
+        markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
+    }
+
+    private void markClose(boolean forObject){
+        if(breakOff) return;
+        markBuilder.markClose(new JsonMarkStruct(route.pop(),route.get(),forObject));
+    }
+
+    private boolean markIndex(Object index,boolean forObject){
+        if(breakOff) return false;
+        return breakOff = markBuilder.markIndex(new JsonMarkIndex(route.getLevel(),route.get(),index,forObject));
+    }
+
+    private void markNext(boolean hasNext){
+        if(breakOff) return;
+        markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),hasNext));
+    }
+
+    private void reset(boolean isBreaker){
+        if(isBreaker){
+            breakOff = false;
+        }
+    }
 }

@@ -30,12 +30,13 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markIndex(JsonMarkIndex mark) {
+    public boolean markIndex(JsonMarkIndex mark) {
         newLine(mark.getLevel());
         if(mark.isForObject()){
             builder.append(mark.getIndex());
             builder.append(Token.OBJECT_P2V);
         }
+        return false;
     }
 
     @Override

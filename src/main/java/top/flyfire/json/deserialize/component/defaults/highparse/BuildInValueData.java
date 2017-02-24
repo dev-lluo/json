@@ -19,7 +19,7 @@ public class BuildInValueData extends HighStructValueData<String,BuildInWrapper,
     @Override
     public MetaInfo indexing(String index) {
         fieldMetaInfo = wrapper.getField(index);
-        return fieldMetaInfo.getType();
+        return fieldMetaInfo==null?null:fieldMetaInfo.getType();
     }
 
     @Override
