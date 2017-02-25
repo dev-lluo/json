@@ -29,9 +29,7 @@ public class RebuildWithMarkTest {
 
     @Test
     public void testHighParse() throws Exception {
-        HighParseJavaObjectBuilder highParseJavaObjectBuilder = new HighParseJavaObjectBuilder(ReflectUtils.getMetaInfo(TestBean.class));
-        new Deserializer(jsonData,highParseJavaObjectBuilder).parse();
-        Object object = highParseJavaObjectBuilder.get();
+        Object object = Json.deserialize(jsonData,TestBean.class);
         System.out.println(Json.serialize(object));
     }
 
