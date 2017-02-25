@@ -1,5 +1,6 @@
 package top.flyfire.json.serialize.component.defaults.tojson;
 
+import top.flyfire.common.StringUtils;
 import top.flyfire.json.Token;
 import top.flyfire.json.mark.*;
 import top.flyfire.json.serialize.SerializeConfig;
@@ -9,7 +10,9 @@ import top.flyfire.json.serialize.SerializeConfig;
  */
 public class ParseJsonBuilder implements JsonMarkBuilder<String> {
 
-    StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder(128);
+
+    String result;
 
     SerializeConfig config;
 
@@ -33,7 +36,6 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
 
     @Override
     public boolean markIndex(JsonMarkIndex mark) {
-        System.out.println(mark.getPath());
         if(mark.isForObject()){
             builder.append(mark.getIndex());
             builder.append(Token.OBJECT_P2V);
@@ -55,6 +57,11 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
 
     @Override
     public String get() {
-        return builder.toString();
+        if(StringUtils.isNull(result)){
+            result = builder.toString();
+            builder= null;
+            config = null;
+        }
+        return result;
     }
 }

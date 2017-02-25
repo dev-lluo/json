@@ -1,5 +1,7 @@
 package top.flyfire.json.deserialize.component.defaults.parse;
 
+import top.flyfire.common.ObjectUtils;
+import top.flyfire.common.StringUtils;
 import top.flyfire.json.mark.*;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ public class ParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
 
 
     private ValueData data;
+
+    private Object result;
 
     @Override
     public void markOpen(JsonMarkStruct mark) {
@@ -42,11 +46,11 @@ public class ParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
 
     @Override
     public Object get() {
-        try {
-            return data.getValue();
-        }finally {
-            data = null;
+        if(ObjectUtils.isNull(result)){
+            result = data.getValue();
+            data= null;
         }
+        return result;
     }
 
     private void dataRender(){

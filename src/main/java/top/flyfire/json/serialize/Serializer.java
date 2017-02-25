@@ -145,7 +145,7 @@ public class Serializer implements Peeker ,Parser {
         public boolean hasNext() {
             flush();
             boolean b = getStructSwap().hasNext();
-            markNext(false);
+            markNext(b);
             return b;
         }
 

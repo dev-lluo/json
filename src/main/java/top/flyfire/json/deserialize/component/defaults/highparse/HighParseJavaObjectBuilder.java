@@ -1,5 +1,6 @@
 package top.flyfire.json.deserialize.component.defaults.highparse;
 
+import top.flyfire.common.ObjectUtils;
 import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.wrapper.*;
 import top.flyfire.json.JsonException;
@@ -17,6 +18,8 @@ public class HighParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
     private MetaInfo metaInfo;
 
     private HighValueData data;
+
+    private Object result;
 
 
     public HighParseJavaObjectBuilder(MetaInfo metaInfo) {
@@ -52,11 +55,12 @@ public class HighParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
 
     @Override
     public Object get() {
-        try {
-            return this.data.getValue();
-        }finally {
-            this.data = null;
+        if(ObjectUtils.isNull(result)){
+            result = data.getValue();
+            data= null;
+            metaInfo = null;
         }
+        return result;
     }
 
     private void dataRender(){

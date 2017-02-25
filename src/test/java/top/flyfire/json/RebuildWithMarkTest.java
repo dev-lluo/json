@@ -1,6 +1,7 @@
 package top.flyfire.json;
 
 import org.junit.Test;
+import top.flyfire.common.ObjectUtils;
 import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.deserialize.Deserializer;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectBuilder;
@@ -30,8 +31,8 @@ public class RebuildWithMarkTest {
     public void testHighParse() throws Exception {
         HighParseJavaObjectBuilder highParseJavaObjectBuilder = new HighParseJavaObjectBuilder(ReflectUtils.getMetaInfo(TestBean.class));
         new Deserializer(jsonData,highParseJavaObjectBuilder).parse();
-        System.out.println(highParseJavaObjectBuilder.get());
-
+        Object object = highParseJavaObjectBuilder.get();
+        System.out.println(Json.serialize(object));
     }
 
 }

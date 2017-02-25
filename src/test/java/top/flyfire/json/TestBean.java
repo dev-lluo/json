@@ -8,6 +8,7 @@ import java.util.Date;
 public class TestBean {
     private String a;
     private String b;
+    private Date c;
 
     public String getA() {
         return a;
@@ -25,4 +26,11 @@ public class TestBean {
         this.b = b;
     }
 
+    public Date getC() {
+        return c;
+    }
+
+    public void setC(Date c) {
+        this.c = c;
+    }
 }

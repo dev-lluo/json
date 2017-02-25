@@ -1,5 +1,6 @@
 package top.flyfire.json.deserialize.component.defaults.format;
 
+import top.flyfire.common.StringUtils;
 import top.flyfire.json.Token;
 import top.flyfire.json.mark.*;
 
@@ -9,6 +10,8 @@ import top.flyfire.json.mark.*;
 public class FormatBuilder implements JsonMarkBuilder<String> {
 
     StringBuilder builder = new StringBuilder(128);
+
+    String result;
 
     @Override
     public void markOpen(JsonMarkStruct mark) {
@@ -66,6 +69,10 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
 
     @Override
     public String get() {
-        return builder.toString();
+        if(StringUtils.isNull(result)){
+            result = builder.toString();
+            builder= null;
+        }
+        return result;
     }
 }
