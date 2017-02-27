@@ -17,6 +17,8 @@ public class Deserializer implements Peeker,Parser {
 
     private JsonRoute route;
 
+    private JsonMarkPool markPool;
+
     private  StringBuilder markCached;
 
     private String mark;
@@ -39,6 +41,7 @@ public class Deserializer implements Peeker,Parser {
         this.cursorBound = source.length();
         this.markBuilder = markBuilder;
         this.route = new JsonRoute();
+        this.markPool = new JsonMarkPool(this.route);
         this.markCached = new StringBuilder();
         STRUCTEDPARSER = new ObjectParser();
         INDEXEDPARSER = new ArrayParser();
@@ -367,27 +370,27 @@ public class Deserializer implements Peeker,Parser {
 
     private void markValue(boolean hasWrapper,boolean isNull,boolean isUndefined){
         if(breakOff) return;
-        markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,isNull,isUndefined));
+        markBuilder.markValue(markPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
     }
 
     private void markOpen(boolean forObject){
         if(breakOff) return;
-        markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
+        markBuilder.markOpen(markPool.borrowStruct(forObject));
     }
 
     private void markClose(boolean forObject){
         if(breakOff) return;
-        markBuilder.markClose(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
+        markBuilder.markClose(markPool.borrowStruct(forObject));
     }
 
     private boolean markIndex(Object index,boolean forObject){
         if(breakOff) return false;
-        return breakOff = markBuilder.markIndex(new JsonMarkIndex(route.getLevel(),route.get(),index,forObject));
+        return breakOff = markBuilder.markIndex(markPool.borrowIndex(index,forObject));
     }
 
     private void markNext(boolean hasNext){
         if(breakOff) return;
-        markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),hasNext));
+        markBuilder.markNext(markPool.borrowNext(hasNext));
     }
 
     private void reset(boolean isBreaker){

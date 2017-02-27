@@ -1,5 +1,7 @@
 package top.flyfire.json.mark;
 
+import top.flyfire.json.JsonRoute;
+
 /**
  * Created by devll on 2017/2/17.
  */
@@ -9,10 +11,8 @@ public class JsonMarkIndex extends JsonMark {
 
     private boolean forObject;
 
-    public JsonMarkIndex(int level, String path, Object index, boolean forObject) {
-        super(level, path);
-        this.index = index;
-        this.forObject = forObject;
+    public JsonMarkIndex(JsonRoute route) {
+        super(route);
     }
 
     public Object getIndex() {
@@ -22,4 +22,10 @@ public class JsonMarkIndex extends JsonMark {
     public boolean isForObject() {
         return forObject;
     }
+
+    protected void flush(Object index,boolean forObject){
+        this.index = index;
+        this.forObject = forObject;
+    }
+
 }

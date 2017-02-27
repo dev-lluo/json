@@ -1,24 +1,24 @@
 package top.flyfire.json.mark;
 
+import top.flyfire.json.JsonRoute;
+
 /**
  * Created by devll on 2017/2/17.
  */
 public abstract class JsonMark {
 
-    private int level;
+    protected JsonRoute route;
 
-    private String path;
-
-    public JsonMark(int level, String path) {
-        this.level = level;
-        this.path = path;
+    public JsonMark(JsonRoute route) {
+        this.route = route;
     }
 
     public int getLevel() {
-        return level;
+        return route.getLevel();
     }
 
     public String getPath() {
-        return path;
+        return route.get();
     }
+
 }

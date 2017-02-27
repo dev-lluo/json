@@ -19,6 +19,8 @@ public class Serializer implements Peeker ,Parser {
 
     private JsonRoute route;
 
+    private JsonMarkPool markPool;
+
     private Object mark;
 
     private boolean breakOff;
@@ -28,10 +30,11 @@ public class Serializer implements Peeker ,Parser {
     public Serializer(Object object, JsonMarkBuilder markBuilder){
         this.markBuilder = markBuilder;
         this.route = new JsonRoute();
+        this.markPool = new JsonMarkPool(this.route);
         value = JsonValue.buildValue(object,null);
         JSONVALUEDPARSER = new JsonValuedParser();
-        JSONKYSTRUCTPARSER = new JsonKyStructParser();
-        JSONIDXSTRUCTPARSER = new JsonIdxStructParser();
+        JSONKYSTRUCTPARSER = new JsonObjectParser();
+        JSONIDXSTRUCTPARSER = new JsonArrayParser();
     }
 
     private JsonValue getJsonValued(){
@@ -77,7 +80,7 @@ public class Serializer implements Peeker ,Parser {
         }
     }
 
-    public class JsonKyStructParser implements Parser ,Enumeration {
+    public class JsonObjectParser implements Parser ,Enumeration {
 
         @Override
         public void parse() {
@@ -117,7 +120,7 @@ public class Serializer implements Peeker ,Parser {
     }
 
 
-    public class JsonIdxStructParser implements Parser ,Enumeration {
+    public class JsonArrayParser implements Parser ,Enumeration {
 
         @Override
         public void parse() {
@@ -158,27 +161,27 @@ public class Serializer implements Peeker ,Parser {
 
     private void markValue(boolean hasWrapper,boolean isNull,boolean isUndefined){
         if(breakOff) return;
-        markBuilder.markValue(new JsonMarkValue(route.getLevel(),route.get(),mark,hasWrapper,false,false));
+        markBuilder.markValue(markPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
     }
 
     private void markOpen(boolean forObject){
         if(breakOff) return;
-        markBuilder.markOpen(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
+        markBuilder.markOpen(markPool.borrowStruct(forObject));
     }
 
     private void markClose(boolean forObject){
         if(breakOff) return;
-        markBuilder.markClose(new JsonMarkStruct(route.getLevel(),route.get(),forObject));
+        markBuilder.markClose(markPool.borrowStruct(forObject));
     }
 
     private boolean markIndex(Object index,boolean forObject){
         if(breakOff) return false;
-        return breakOff = markBuilder.markIndex(new JsonMarkIndex(route.getLevel(),route.get(),index,forObject));
+        return breakOff = markBuilder.markIndex(markPool.borrowIndex(index,forObject));
     }
 
     private void markNext(boolean hasNext){
         if(breakOff) return;
-        markBuilder.markNext(new JsonMarkNext(route.getLevel(),route.get(),hasNext));
+        markBuilder.markNext(markPool.borrowNext(hasNext));
     }
 
     private void reset(boolean isBreaker){

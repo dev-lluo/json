@@ -1,5 +1,8 @@
 package top.flyfire.json.mark;
 
+
+import top.flyfire.json.JsonRoute;
+
 /**
  * Created by devll on 2017/2/17.
  */
@@ -13,12 +16,8 @@ public class JsonMarkValue extends JsonMark {
 
     private boolean hasWrapper;
 
-    public JsonMarkValue(int level, String path, Object value,boolean hasWrapper, boolean isNull, boolean isUndefined) {
-        super(level, path);
-        this.value = value;
-        this.hasWrapper = hasWrapper;
-        this.isNull = isNull;
-        this.isUndefined = isUndefined;
+    public JsonMarkValue(JsonRoute route) {
+        super(route);
     }
 
     public Object getValue() {
@@ -36,4 +35,12 @@ public class JsonMarkValue extends JsonMark {
     public boolean hasWrapper() {
         return hasWrapper;
     }
+
+    public void flush(Object value,boolean isNull,boolean isUndefined,boolean hasWrapper){
+        this.value = value;
+        this.isNull = isNull;
+        this.isUndefined = isUndefined;
+        this.hasWrapper = hasWrapper;
+    }
+
 }
