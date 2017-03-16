@@ -8,29 +8,35 @@ import top.flyfire.common.StringUtils;
  */
 public class JsonRoute {
 
-    private String[] caches;
+    private Object[] caches;
+
+    private Integer[] tokenCaches;
 
     private int level;
 
+    private int size = 16;
+
     public JsonRoute(){
         level = 0;
-        caches = new String[16];
-        push("$");
+        caches = new Object[size];
+        tokenCaches = new Integer[size];
+        push("$",0);
     }
 
     public int pushArrayIndex(int index){
-        return push(StringUtils.merge("[",index,"]"));
+        return push(index,1);
     }
 
     public int pushObjectKey(String key){
-        return push(StringUtils.merge(".",key));
+        return push(key,0);
     }
 
-    private int push(String nodeName){
+    private int push(Object nodeName,int token){
         if(level ==caches.length) {
             resize();
         }
         caches[level] = nodeName;
+        tokenCaches[level] = token;
         return level++;
     }
 
@@ -38,8 +44,8 @@ public class JsonRoute {
         return --level;
     }
 
-    public String get(){
-        return null;// StringUtils.megre(caches, level);
+    public <T> T get(){
+        return (T)caches[level-1];
     }
 
     public int getLevel() {
@@ -47,9 +53,13 @@ public class JsonRoute {
     }
 
     private void resize(){
-        String[] oldCaches = caches;
-        this.caches = new String[oldCaches.length<<1];
+        Object[] oldCaches = caches;
+        size <<= 1;
+        this.caches = new Object[size];
         ArrayUtils.arrayCopy(oldCaches,0,this.caches,0,oldCaches.length);
+        Integer[] oldTokenCaches = tokenCaches;
+        this.tokenCaches = new Integer[size];
+        ArrayUtils.arrayCopy(oldTokenCaches,0,this.tokenCaches,0,oldTokenCaches.length);
     }
 
 }

@@ -17,7 +17,7 @@ public abstract class JsonMark {
         return route.getLevel();
     }
 
-    public String getPath() {
+    public <T> T getCurrent() {
         return route.get();
     }
 

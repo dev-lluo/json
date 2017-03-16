@@ -45,7 +45,12 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
 
     @Override
     public void markValue(JsonMarkValue mark) {
-        builder.append(config.value2String(mark.getValue()));
+        if(mark.hasWrapper()){
+            builder.append(Token.DOUBLE_QUOTE).append(config.value2String(mark.getValue())).append(Token.DOUBLE_QUOTE);
+        }else{
+            builder.append(config.value2String(mark.getValue()));
+        }
+
     }
 
     @Override

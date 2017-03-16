@@ -52,7 +52,7 @@ public class SerializeConfig {
                     @Override
                     public String handling(Object o, HandlerChain<String, Object> handlerChain) {
                         if (o instanceof Date) {
-                            return StringUtils.merge(Token.DOUBLE_QUOTE,DateUtils.format((Date) o),Token.DOUBLE_QUOTE);
+                            return DateUtils.format((Date) o);
                         } else {
                             return handlerChain.handling(o);
                         }
@@ -60,20 +60,7 @@ public class SerializeConfig {
                 }, new Handler<String, Object>() {
                     @Override
                     public String handling(Object o, HandlerChain<String, Object> handlerChain) {
-                        if (ReflectUtils.isJdkPrimitiveType(o.getClass())) {
-                            return o.toString();
-                        } else {
-                            return handlerChain.handling(o);
-                        }
-                    }
-                }, new Handler<String, Object>() {
-                    @Override
-                    public String handling(Object o, HandlerChain<String, Object> handlerChain) {
-                        if(o instanceof String){
-                            return StringUtils.merge("\"",(String) o,"\"");
-                        }else {
-                            return handlerChain.handling(o);
-                        }
+                        return o.toString();
                     }
                 }
         ));

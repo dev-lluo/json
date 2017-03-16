@@ -3,6 +3,9 @@ package top.flyfire.json;
 import org.junit.Test;
 import top.flyfire.common.reflect.RawType;
 
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
+
 /**
  * Created by flyfire[dev.lluo@outlook.com] on 2016/6/21.
  */

@@ -932,10 +932,12 @@ public class JsonUTest2 {
     public void testFlyFireJson() {
         final Type type = new RawType<List<Province>>() {
         }.getType();
+//        final List<Province> list = (List)top.flyfire.json.Json.deserialize(jsonData, type);
         Timed.test(testCount, new Timed.Case() {
             @Override
             public void exec() {
-                top.flyfire.json.Json.deserialize(jsonData, type);
+                List<Province> list = (List)top.flyfire.json.Json.deserialize(jsonData, type);
+                top.flyfire.json.Json.serialize(list);
             }
         });
 
@@ -950,7 +952,8 @@ public class JsonUTest2 {
         Timed.test(testCount, new Timed.Case() {
             @Override
             public void exec() {
-                gson.fromJson(jsonData, type);
+                List<Province> list = gson.fromJson(jsonData, type);
+                gson.toJson(list);
             }
         });
 
@@ -961,7 +964,8 @@ public class JsonUTest2 {
         Timed.test(testCount, new Timed.Case() {
             @Override
             public void exec() {
-                com.alibaba.fastjson.JSON.parseArray(jsonData, Province.class);
+                List<Province> list =com.alibaba.fastjson.JSON.parseArray(jsonData, Province.class);
+                com.alibaba.fastjson.JSON.toJSONString(list);
             }
         });
 

@@ -1,6 +1,7 @@
 package top.flyfire.json.serialize;
 
 
+import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.*;
 import top.flyfire.json.mark.*;
 import top.flyfire.json.serialize.component.StructNode;
@@ -75,7 +76,12 @@ public class Serializer implements Peeker ,Parser {
         @Override
         public void parse() {
             mark = getJsonValued().getCached();
-            markValue(false,false,false);
+            boolean isNull = mark == null;
+            boolean hasWrapper = false;
+            if(!isNull){
+                hasWrapper = !ReflectUtils.isJdkPrimitiveType(mark.getClass());
+            }
+            markValue(isNull,false, hasWrapper);
             route.pop();
         }
     }
@@ -159,7 +165,7 @@ public class Serializer implements Peeker ,Parser {
         }
     }
 
-    private void markValue(boolean hasWrapper,boolean isNull,boolean isUndefined){
+    private void markValue(boolean isNull,boolean isUndefined, boolean hasWrapper){
         if(breakOff) return;
         markBuilder.markValue(markPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
     }
