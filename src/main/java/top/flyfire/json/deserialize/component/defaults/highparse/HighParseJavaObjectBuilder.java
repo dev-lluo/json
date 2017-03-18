@@ -4,7 +4,7 @@ import top.flyfire.common.ObjectUtils;
 import top.flyfire.common.reflect.MetaInfo;
 import top.flyfire.common.reflect.wrapper.*;
 import top.flyfire.json.JsonException;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.*;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by shyy_work on 2017/2/24.
  */
-public class HighParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
+public class HighParseJavaObjectBuilder implements JsonWorkListener<Object> {
 
 
     private MetaInfo metaInfo;
@@ -27,29 +27,29 @@ public class HighParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
     }
 
     @Override
-    public void markOpen(JsonMarkStruct mark) {
+    public void markOpen(JsonStructEvent mark) {
         InstanceWrapper instanceWrapper = (InstanceWrapper) (metaInfo.getWrapper());
         data = buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
     }
 
     @Override
-    public void markClose(JsonMarkStruct mark) {
+    public void markClose(JsonStructEvent mark) {
         dataRender();
     }
 
     @Override
-    public boolean markIndex(JsonMarkIndex mark) {
+    public boolean markIndex(JsonIndexEvent mark) {
         return  null == (metaInfo = ((HighStructValueData) data).indexing(mark.getIndex()));
     }
 
     @Override
-    public void markValue(JsonMarkValue mark) {
+    public void markValue(JsonValueEvent mark) {
         data = new HighRawValueData((ValueWrapper) (metaInfo.getWrapper()), mark.getValue(), (HighStructValueData) data);
         dataRender();
     }
 
     @Override
-    public void markNext(JsonMarkNext mark) {
+    public void markNext(JsonNextEvent mark) {
 
     }
 

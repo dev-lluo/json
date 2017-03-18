@@ -1,15 +1,15 @@
-package top.flyfire.json.mark;
+package top.flyfire.json.event;
 
 import top.flyfire.json.JsonRoute;
 
 /**
  * Created by devll on 2017/2/17.
  */
-public abstract class JsonMark {
+public abstract class JsonWorkEvent {
 
     protected JsonRoute route;
 
-    public JsonMark(JsonRoute route) {
+    public JsonWorkEvent(JsonRoute route) {
         this.route = route;
     }
 

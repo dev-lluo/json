@@ -2,13 +2,13 @@ package top.flyfire.json.serialize.component.defaults.tojson;
 
 import top.flyfire.common.StringUtils;
 import top.flyfire.json.Token;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.*;
 import top.flyfire.json.serialize.SerializeConfig;
 
 /**
  * Created by devll on 2017/2/24.
  */
-public class ParseJsonBuilder implements JsonMarkBuilder<String> {
+public class ParseJsonBuilder implements JsonWorkListener<String> {
 
     StringBuilder builder = new StringBuilder(128);
 
@@ -25,17 +25,17 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markOpen(JsonMarkStruct mark) {
+    public void markOpen(JsonStructEvent mark) {
         builder.append(mark.isForObject()? Token.OBJECT_OPEN:Token.ARRAY_OPEN);
     }
 
     @Override
-    public void markClose(JsonMarkStruct mark) {
+    public void markClose(JsonStructEvent mark) {
         builder.append(mark.isForObject()?Token.OBJECT_CLOSE:Token.ARRAY_CLOSE);
     }
 
     @Override
-    public boolean markIndex(JsonMarkIndex mark) {
+    public boolean markIndex(JsonIndexEvent mark) {
         if(mark.isForObject()){
             builder.append(mark.getIndex());
             builder.append(Token.OBJECT_P2V);
@@ -44,7 +44,7 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markValue(JsonMarkValue mark) {
+    public void markValue(JsonValueEvent mark) {
         if(mark.hasWrapper()){
             builder.append(Token.DOUBLE_QUOTE).append(config.value2String(mark.getValue())).append(Token.DOUBLE_QUOTE);
         }else{
@@ -54,7 +54,7 @@ public class ParseJsonBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markNext(JsonMarkNext mark) {
+    public void markNext(JsonNextEvent mark) {
         if(mark.hasNext()){
             builder.append(Token.NEXT);
         }

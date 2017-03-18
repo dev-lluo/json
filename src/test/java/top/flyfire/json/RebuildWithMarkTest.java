@@ -1,12 +1,9 @@
 package top.flyfire.json;
 
 import org.junit.Test;
-import top.flyfire.common.ObjectUtils;
-import top.flyfire.common.reflect.ReflectUtils;
-import top.flyfire.json.deserialize.Deserializer;
-import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectBuilder;
+import top.flyfire.json.deserialize.DeserializeWorker;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectBuilder;
-import top.flyfire.json.serialize.Serializer;
+import top.flyfire.json.serialize.SerializeWorker;
 import top.flyfire.json.serialize.component.defaults.tojson.ParseJsonBuilder;
 
 /**
@@ -19,11 +16,11 @@ public class RebuildWithMarkTest {
     @Test
     public void testSimpleParse(){
         ParseJavaObjectBuilder parseJavaObjectBuilder = new ParseJavaObjectBuilder();
-        new Deserializer(jsonData,parseJavaObjectBuilder).parse();
+        new DeserializeWorker(jsonData,parseJavaObjectBuilder).parse();
         Object object = parseJavaObjectBuilder.get();
         System.out.println(object);
         ParseJsonBuilder jsonBuilder2 = new ParseJsonBuilder();
-        new Serializer(object,jsonBuilder2).parse();
+        new SerializeWorker(object,jsonBuilder2).parse();
         System.out.println(jsonBuilder2.get());
     }
 

@@ -3,21 +3,22 @@ package top.flyfire.json.deserialize;
 import top.flyfire.json.*;
 import top.flyfire.json.deserialize.exception.UnexpectedEndTokenException;
 import top.flyfire.json.deserialize.exception.UnexpectedTokenException;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.JsonWorkListener;
+import top.flyfire.json.event.JsonEventPool;
 
 /**
  * Created by shyy_work on 2016/6/21.
  */
 @SuppressWarnings("all")
-public class Deserializer implements Peeker,Parser {
+public class DeserializeWorker implements JsonMaster,JsonWorker {
 
     private String source;
 
-    private JsonMarkBuilder markBuilder;
+    private JsonWorkListener markBuilder;
 
     private JsonRoute route;
 
-    private JsonMarkPool markPool;
+    private JsonEventPool markPool;
 
     private  StringBuilder markCached;
 
@@ -29,23 +30,23 @@ public class Deserializer implements Peeker,Parser {
 
     private int cursor, cursorBound, level;
 
-    private Parser STRUCTEDPARSER;
+    private JsonWorker STRUCTEDPARSER;
 
-    private Parser INDEXEDPARSER;
+    private JsonWorker INDEXEDPARSER;
 
-    private Parser PRIMITIVEPARSER;
+    private JsonWorker PRIMITIVEPARSER;
 
-    public Deserializer(String source, JsonMarkBuilder markBuilder) {
+    public DeserializeWorker(String source, JsonWorkListener markBuilder) {
         this.source = source;
         this.cursor = this.level = 0;
         this.cursorBound = source.length();
         this.markBuilder = markBuilder;
         this.route = new JsonRoute();
-        this.markPool = new JsonMarkPool(this.route);
+        this.markPool = new JsonEventPool(this.route);
         this.markCached = new StringBuilder();
-        STRUCTEDPARSER = new ObjectParser();
-        INDEXEDPARSER = new ArrayParser();
-        PRIMITIVEPARSER = new PrimitiveParser();
+        STRUCTEDPARSER = new ObjectWorker();
+        INDEXEDPARSER = new ArrayWorker();
+        PRIMITIVEPARSER = new PrimitiveWorker();
     }
 
     @Override
@@ -55,7 +56,7 @@ public class Deserializer implements Peeker,Parser {
 
 
     @Override
-    public Parser peek() {
+    public JsonWorker peek() {
         char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before value
         if (Tokenizer.isArrayStart(dest)) {
             if (!roll()) throw new UnexpectedEndTokenException(this.source);
@@ -179,13 +180,13 @@ public class Deserializer implements Peeker,Parser {
         return ++cursor < cursorBound;
     }
 
-    private class ObjectParser implements Parser, Enumeration, Peeker {
+    private class ObjectWorker implements JsonWorker, Enumeration, JsonMaster {
 
-        private Parser PRIMITIVEPARSER;
+        private JsonWorker PRIMITIVEPARSER;
 
-        public ObjectParser() {
+        public ObjectWorker() {
             super();
-            PRIMITIVEPARSER = new ObjectPrimitiveParser();
+            PRIMITIVEPARSER = new ObjectPrimitiveWorker();
         }
 
         @Override
@@ -246,7 +247,7 @@ public class Deserializer implements Peeker,Parser {
         }
 
         @Override
-        public Parser peek() {
+        public JsonWorker peek() {
             char dest;
             if (Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
                 if (!roll()) throw new UnexpectedEndTokenException(source);
@@ -260,13 +261,13 @@ public class Deserializer implements Peeker,Parser {
         }
     }
 
-    private class ArrayParser implements Parser, Enumeration, Peeker {
+    private class ArrayWorker implements JsonWorker, Enumeration, JsonMaster {
 
-        private Parser PRIMITIVEPARSER;
+        private JsonWorker PRIMITIVEPARSER;
 
-        public ArrayParser() {
+        public ArrayWorker() {
             super();
-            PRIMITIVEPARSER = new IndexedPrimitiveParser();
+            PRIMITIVEPARSER = new IndexedPrimitiveWorker();
         }
 
         @Override
@@ -327,7 +328,7 @@ public class Deserializer implements Peeker,Parser {
         }
 
         @Override
-        public Parser peek() {
+        public JsonWorker peek() {
             char dest;
             if (Tokenizer.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
                 if (!roll()) throw new UnexpectedEndTokenException(source);
@@ -341,7 +342,7 @@ public class Deserializer implements Peeker,Parser {
         }
     }
 
-    private class PrimitiveParser implements Parser {
+    private class PrimitiveWorker implements JsonWorker {
         @Override
         public void parse() {
             tokenRead(Token.NEXT, Token.ARRAY_CLOSE);
@@ -350,7 +351,7 @@ public class Deserializer implements Peeker,Parser {
         }
     }
 
-    private class ObjectPrimitiveParser implements Parser {
+    private class ObjectPrimitiveWorker implements JsonWorker {
         @Override
         public void parse() {
             tokenRead(Token.NEXT, Token.OBJECT_CLOSE);
@@ -359,7 +360,7 @@ public class Deserializer implements Peeker,Parser {
         }
     }
 
-    private class IndexedPrimitiveParser implements Parser {
+    private class IndexedPrimitiveWorker implements JsonWorker {
         @Override
         public void parse() {
             tokenRead(Token.NEXT, Token.ARRAY_CLOSE);

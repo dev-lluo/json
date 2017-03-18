@@ -3,7 +3,8 @@ package top.flyfire.json.serialize;
 
 import top.flyfire.common.reflect.ReflectUtils;
 import top.flyfire.json.*;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.JsonWorkListener;
+import top.flyfire.json.event.JsonEventPool;
 import top.flyfire.json.serialize.component.StructNode;
 import top.flyfire.json.serialize.component.defaults.JsonArrayStruct;
 import top.flyfire.json.serialize.component.defaults.JsonObjectStruct;
@@ -12,30 +13,30 @@ import top.flyfire.json.serialize.component.defaults.JsonValue;
 /**
  * Created by devll on 2016/11/9.
  */
-public class Serializer implements Peeker ,Parser {
+public class SerializeWorker implements JsonMaster,JsonWorker {
 
     private JsonValue value;
 
-    private JsonMarkBuilder markBuilder;
+    private JsonWorkListener markBuilder;
 
     private JsonRoute route;
 
-    private JsonMarkPool markPool;
+    private JsonEventPool markPool;
 
     private Object mark;
 
     private boolean breakOff;
 
-    private Parser JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
+    private JsonWorker JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
 
-    public Serializer(Object object, JsonMarkBuilder markBuilder){
+    public SerializeWorker(Object object, JsonWorkListener markBuilder){
         this.markBuilder = markBuilder;
         this.route = new JsonRoute();
-        this.markPool = new JsonMarkPool(this.route);
+        this.markPool = new JsonEventPool(this.route);
         value = JsonValue.buildValue(object,null);
-        JSONVALUEDPARSER = new JsonValuedParser();
-        JSONKYSTRUCTPARSER = new JsonObjectParser();
-        JSONIDXSTRUCTPARSER = new JsonArrayParser();
+        JSONVALUEDPARSER = new JsonValuedWorker();
+        JSONKYSTRUCTPARSER = new JsonObjectWorker();
+        JSONIDXSTRUCTPARSER = new JsonArrayWorker();
     }
 
     private JsonValue getJsonValued(){
@@ -52,7 +53,7 @@ public class Serializer implements Peeker ,Parser {
     }
 
     @Override
-    public Parser peek() {
+    public JsonWorker peek() {
         if(value instanceof JsonObjectStruct){
             return JSONKYSTRUCTPARSER;
         }else if(value instanceof JsonArrayStruct){
@@ -71,7 +72,7 @@ public class Serializer implements Peeker ,Parser {
         temp.destroy();
     }
 
-    public class JsonValuedParser implements Parser{
+    public class JsonValuedWorker implements JsonWorker {
 
         @Override
         public void parse() {
@@ -86,7 +87,7 @@ public class Serializer implements Peeker ,Parser {
         }
     }
 
-    public class JsonObjectParser implements Parser ,Enumeration {
+    public class JsonObjectWorker implements JsonWorker,Enumeration {
 
         @Override
         public void parse() {
@@ -97,7 +98,7 @@ public class Serializer implements Peeker ,Parser {
                     route.pushObjectKey((String) entry.indexing());
                     isBreaker = markIndex(entry.indexing(),true);
                     value = entry.value();
-                    Serializer.this.parse();
+                    SerializeWorker.this.parse();
                     reset(isBreaker);
                 }while (hasNext());
             }
@@ -126,7 +127,7 @@ public class Serializer implements Peeker ,Parser {
     }
 
 
-    public class JsonArrayParser implements Parser ,Enumeration {
+    public class JsonArrayWorker implements JsonWorker,Enumeration {
 
         @Override
         public void parse() {
@@ -137,7 +138,7 @@ public class Serializer implements Peeker ,Parser {
                     route.pushArrayIndex((int) entry.indexing());
                     isBreak = markIndex(entry.indexing(),false);
                     value = entry.value();
-                    Serializer.this.parse();
+                    SerializeWorker.this.parse();
                     reset(isBreak);
                 }while (hasNext());
             }

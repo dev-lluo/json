@@ -6,10 +6,10 @@ import top.flyfire.json.deserialize.DeserializeConfig;
 import top.flyfire.json.deserialize.component.defaults.format.FormatBuilder;
 import top.flyfire.json.deserialize.component.defaults.highparse.HighParseJavaObjectBuilder;
 import top.flyfire.json.deserialize.component.defaults.parse.ParseJavaObjectBuilder;
-import top.flyfire.json.deserialize.Deserializer;
-import top.flyfire.json.mark.JsonMarkBuilder;
+import top.flyfire.json.deserialize.DeserializeWorker;
+import top.flyfire.json.event.JsonWorkListener;
 import top.flyfire.json.serialize.SerializeConfig;
-import top.flyfire.json.serialize.Serializer;
+import top.flyfire.json.serialize.SerializeWorker;
 import top.flyfire.json.serialize.component.defaults.tojson.ParseJsonBuilder;
 
 import java.lang.reflect.Type;
@@ -22,7 +22,7 @@ public class Json {
 
     public static String format(String json){
         FormatBuilder formatBuilder = new FormatBuilder();
-        new Deserializer(json,formatBuilder).parse();
+        new DeserializeWorker(json,formatBuilder).parse();
         return formatBuilder.get();
     }
 
@@ -60,15 +60,15 @@ public class Json {
         return builder.get();
     }
 
-    public static void deserialize(String json, JsonMarkBuilder markBuilder){
-        Json.exec(new Deserializer(json,markBuilder));
+    public static void deserialize(String json, JsonWorkListener markBuilder){
+        Json.exec(new DeserializeWorker(json,markBuilder));
     }
 
-    public static void serialize(Object object, JsonMarkBuilder markBuilder){
-        Json.exec(new Serializer(object,markBuilder));
+    public static void serialize(Object object, JsonWorkListener markBuilder){
+        Json.exec(new SerializeWorker(object,markBuilder));
     }
 
-    public static void exec(Parser parser){
+    public static void exec(JsonWorker parser){
         parser.parse();
     }
 }

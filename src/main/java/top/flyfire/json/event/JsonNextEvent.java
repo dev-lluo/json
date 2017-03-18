@@ -1,15 +1,15 @@
-package top.flyfire.json.mark;
+package top.flyfire.json.event;
 
 import top.flyfire.json.JsonRoute;
 
 /**
  * Created by devll on 2017/2/17.
  */
-public class JsonMarkNext extends JsonMark {
+public class JsonNextEvent extends JsonWorkEvent {
 
     private boolean hasNext;
 
-    public JsonMarkNext(JsonRoute route) {
+    public JsonNextEvent(JsonRoute route) {
         super(route);
     }
 

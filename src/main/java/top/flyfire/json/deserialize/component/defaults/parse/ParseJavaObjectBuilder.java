@@ -1,8 +1,7 @@
 package top.flyfire.json.deserialize.component.defaults.parse;
 
 import top.flyfire.common.ObjectUtils;
-import top.flyfire.common.StringUtils;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +9,7 @@ import java.util.HashMap;
 /**
  * Created by shyy_work on 2017/2/24.
  */
-public class ParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
+public class ParseJavaObjectBuilder implements JsonWorkListener<Object> {
 
 
     private ValueData data;
@@ -18,29 +17,29 @@ public class ParseJavaObjectBuilder implements JsonMarkBuilder<Object> {
     private Object result;
 
     @Override
-    public void markOpen(JsonMarkStruct mark) {
+    public void markOpen(JsonStructEvent mark) {
         data = mark.isForObject()?new ObjectData(new HashMap(), (StructValueData) data): new ArrayData(new ArrayList(), (StructValueData) data);
     }
 
     @Override
-    public void markClose(JsonMarkStruct mark) {
+    public void markClose(JsonStructEvent mark) {
         dataRender();
     }
 
     @Override
-    public boolean markIndex(JsonMarkIndex mark) {
+    public boolean markIndex(JsonIndexEvent mark) {
         ((StructValueData)data).indexing(mark.getIndex());
         return false;
     }
 
     @Override
-    public void markValue(JsonMarkValue mark) {
+    public void markValue(JsonValueEvent mark) {
         data = new ValueData(mark.getValue(), (StructValueData) data);
         dataRender();
     }
 
     @Override
-    public void markNext(JsonMarkNext mark) {
+    public void markNext(JsonNextEvent mark) {
 
     }
 

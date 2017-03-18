@@ -1,4 +1,4 @@
-package top.flyfire.json.mark;
+package top.flyfire.json.event;
 
 
 import top.flyfire.json.JsonRoute;
@@ -6,7 +6,7 @@ import top.flyfire.json.JsonRoute;
 /**
  * Created by devll on 2017/2/17.
  */
-public class JsonMarkValue extends JsonMark {
+public class JsonValueEvent extends JsonWorkEvent {
 
     private Object value;
 
@@ -16,7 +16,7 @@ public class JsonMarkValue extends JsonMark {
 
     private boolean hasWrapper;
 
-    public JsonMarkValue(JsonRoute route) {
+    public JsonValueEvent(JsonRoute route) {
         super(route);
     }
 

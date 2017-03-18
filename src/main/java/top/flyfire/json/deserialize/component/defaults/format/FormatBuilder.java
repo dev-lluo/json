@@ -2,19 +2,19 @@ package top.flyfire.json.deserialize.component.defaults.format;
 
 import top.flyfire.common.StringUtils;
 import top.flyfire.json.Token;
-import top.flyfire.json.mark.*;
+import top.flyfire.json.event.*;
 
 /**
  * Created by devll on 2017/2/17.
  */
-public class FormatBuilder implements JsonMarkBuilder<String> {
+public class FormatBuilder implements JsonWorkListener<String> {
 
     StringBuilder builder = new StringBuilder(128);
 
     String result;
 
     @Override
-    public void markOpen(JsonMarkStruct mark) {
+    public void markOpen(JsonStructEvent mark) {
         if(mark.isForObject()){
             builder.append(Token.OBJECT_OPEN);
         }else{
@@ -23,7 +23,7 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markClose(JsonMarkStruct mark) {
+    public void markClose(JsonStructEvent mark) {
         newLine(mark.getLevel());
         if(mark.isForObject()){
             builder.append(Token.OBJECT_CLOSE);
@@ -33,7 +33,7 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public boolean markIndex(JsonMarkIndex mark) {
+    public boolean markIndex(JsonIndexEvent mark) {
         newLine(mark.getLevel());
         if(mark.isForObject()){
             builder.append(mark.getIndex());
@@ -43,7 +43,7 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markValue(JsonMarkValue mark) {
+    public void markValue(JsonValueEvent mark) {
         if(mark.isNull()){
             builder.append("null");
         }else if(mark.isUndefined()){
@@ -54,7 +54,7 @@ public class FormatBuilder implements JsonMarkBuilder<String> {
     }
 
     @Override
-    public void markNext(JsonMarkNext mark) {
+    public void markNext(JsonNextEvent mark) {
         if(mark.hasNext()){
             builder.append(",");
         }

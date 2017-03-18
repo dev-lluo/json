@@ -1,17 +1,17 @@
-package top.flyfire.json.mark;
+package top.flyfire.json.event;
 
 import top.flyfire.json.JsonRoute;
 
 /**
  * Created by devll on 2017/2/17.
  */
-public class JsonMarkIndex extends JsonMark {
+public class JsonIndexEvent extends JsonWorkEvent {
 
     private Object index;
 
     private boolean forObject;
 
-    public JsonMarkIndex(JsonRoute route) {
+    public JsonIndexEvent(JsonRoute route) {
         super(route);
     }
 
