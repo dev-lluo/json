@@ -5,15 +5,15 @@ package top.flyfire.json.event;
  */
 public interface JsonWorkListener<Result> {
 
-    void markOpen(JsonStructEvent mark);
+    void onOpen(JsonStructEvent mark);
 
-    void markClose(JsonStructEvent mark);
+    void onClose(JsonStructEvent mark);
 
-    boolean markIndex(JsonIndexEvent mark);
+    boolean onIndex(JsonIndexEvent mark);
 
-    void markValue(JsonValueEvent mark);
+    void onValue(JsonValueEvent mark);
 
-    void markNext(JsonNextEvent mark);
+    void onNext(JsonNextEvent mark);
 
     Result get();
 

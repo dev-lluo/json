@@ -27,29 +27,29 @@ public class HighParseJavaObjectBuilder implements JsonWorkListener<Object> {
     }
 
     @Override
-    public void markOpen(JsonStructEvent mark) {
+    public void onOpen(JsonStructEvent mark) {
         InstanceWrapper instanceWrapper = (InstanceWrapper) (metaInfo.getWrapper());
         data = buildStructValueData(instanceWrapper, instanceWrapper.instance(), (HighStructValueData) data);
     }
 
     @Override
-    public void markClose(JsonStructEvent mark) {
+    public void onClose(JsonStructEvent mark) {
         dataRender();
     }
 
     @Override
-    public boolean markIndex(JsonIndexEvent mark) {
+    public boolean onIndex(JsonIndexEvent mark) {
         return  null == (metaInfo = ((HighStructValueData) data).indexing(mark.getIndex()));
     }
 
     @Override
-    public void markValue(JsonValueEvent mark) {
+    public void onValue(JsonValueEvent mark) {
         data = new HighRawValueData((ValueWrapper) (metaInfo.getWrapper()), mark.getValue(), (HighStructValueData) data);
         dataRender();
     }
 
     @Override
-    public void markNext(JsonNextEvent mark) {
+    public void onNext(JsonNextEvent mark) {
 
     }
 

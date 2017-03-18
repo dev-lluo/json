@@ -5,6 +5,6 @@ package top.flyfire.json;
  */
 public interface JsonMaster {
 
-    JsonWorker peek();
+    JsonWorker call();
 
 }

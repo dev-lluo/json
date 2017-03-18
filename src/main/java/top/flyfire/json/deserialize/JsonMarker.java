@@ -1,11 +1,11 @@
 package top.flyfire.json.deserialize;
 
-import top.flyfire.json.Token;
+import top.flyfire.json.JsonMark;
 
 /**
  * Created by shyy_work on 2016/6/21.
  */
-public final class Tokenizer implements Token {
+public final class JsonMarker implements JsonMark {
 
     public static boolean isArrayStart(char token){
         return ARRAY_OPEN == token;

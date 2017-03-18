@@ -17,11 +17,11 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
 
     private JsonValue value;
 
-    private JsonWorkListener markBuilder;
+    private JsonWorkListener workListener;
 
     private JsonRoute route;
 
-    private JsonEventPool markPool;
+    private JsonEventPool eventPool;
 
     private Object mark;
 
@@ -30,9 +30,9 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
     private JsonWorker JSONVALUEDPARSER, JSONKYSTRUCTPARSER, JSONIDXSTRUCTPARSER;
 
     public SerializeWorker(Object object, JsonWorkListener markBuilder){
-        this.markBuilder = markBuilder;
+        this.workListener = markBuilder;
         this.route = new JsonRoute();
-        this.markPool = new JsonEventPool(this.route);
+        this.eventPool = new JsonEventPool(this.route);
         value = JsonValue.buildValue(object,null);
         JSONVALUEDPARSER = new JsonValuedWorker();
         JSONKYSTRUCTPARSER = new JsonObjectWorker();
@@ -48,12 +48,12 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
     }
 
     @Override
-    public void parse() {
-        peek().parse();
+    public void work() {
+        call().work();
     }
 
     @Override
-    public JsonWorker peek() {
+    public JsonWorker call() {
         if(value instanceof JsonObjectStruct){
             return JSONKYSTRUCTPARSER;
         }else if(value instanceof JsonArrayStruct){
@@ -75,14 +75,14 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
     public class JsonValuedWorker implements JsonWorker {
 
         @Override
-        public void parse() {
+        public void work() {
             mark = getJsonValued().getCached();
             boolean isNull = mark == null;
             boolean hasWrapper = false;
             if(!isNull){
                 hasWrapper = !ReflectUtils.isJdkPrimitiveType(mark.getClass());
             }
-            markValue(isNull,false, hasWrapper);
+            onValue(isNull,false, hasWrapper);
             route.pop();
         }
     }
@@ -90,15 +90,15 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
     public class JsonObjectWorker implements JsonWorker,Enumeration {
 
         @Override
-        public void parse() {
+        public void work() {
             if(validateAndStart()){
                 boolean isBreaker = false;
                 do{
                     StructNode.Entry entry = getStructSwap().peeking();
                     route.pushObjectKey((String) entry.indexing());
-                    isBreaker = markIndex(entry.indexing(),true);
+                    isBreaker = onIndex(entry.indexing(),true);
                     value = entry.value();
-                    SerializeWorker.this.parse();
+                    SerializeWorker.this.work();
                     reset(isBreaker);
                 }while (hasNext());
             }
@@ -107,7 +107,7 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
 
         @Override
         public boolean validateAndStart() {
-            markOpen(true);
+            onOpen(true);
             return getStructSwap().notEmptyAndPeekStart();
         }
 
@@ -115,13 +115,13 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
         public boolean hasNext() {
             flush();
             boolean b = getStructSwap().hasNext();
-            markNext(b);
+            onNext(b);
             return b;
         }
 
         @Override
         public void validateAndEnd() {
-            markClose(true);
+            onClose(true);
             route.pop();
         }
     }
@@ -130,15 +130,15 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
     public class JsonArrayWorker implements JsonWorker,Enumeration {
 
         @Override
-        public void parse() {
+        public void work() {
             if(validateAndStart()){
                 boolean isBreak = false;
                 do{
                     StructNode.Entry entry = getStructSwap().peeking();
                     route.pushArrayIndex((int) entry.indexing());
-                    isBreak = markIndex(entry.indexing(),false);
+                    isBreak = onIndex(entry.indexing(),false);
                     value = entry.value();
-                    SerializeWorker.this.parse();
+                    SerializeWorker.this.work();
                     reset(isBreak);
                 }while (hasNext());
             }
@@ -147,7 +147,7 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
 
         @Override
         public boolean validateAndStart() {
-            markOpen(false);
+            onOpen(false);
             return getStructSwap().notEmptyAndPeekStart();
         }
 
@@ -155,40 +155,40 @@ public class SerializeWorker implements JsonMaster,JsonWorker {
         public boolean hasNext() {
             flush();
             boolean b = getStructSwap().hasNext();
-            markNext(b);
+            onNext(b);
             return b;
         }
 
         @Override
         public void validateAndEnd() {
-            markClose(false);
+            onClose(false);
             route.pop();
         }
     }
 
-    private void markValue(boolean isNull,boolean isUndefined, boolean hasWrapper){
+    private void onValue(boolean isNull, boolean isUndefined, boolean hasWrapper){
         if(breakOff) return;
-        markBuilder.markValue(markPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
+        workListener.onValue(eventPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
     }
 
-    private void markOpen(boolean forObject){
+    private void onOpen(boolean forObject){
         if(breakOff) return;
-        markBuilder.markOpen(markPool.borrowStruct(forObject));
+        workListener.onOpen(eventPool.borrowStruct(forObject));
     }
 
-    private void markClose(boolean forObject){
+    private void onClose(boolean forObject){
         if(breakOff) return;
-        markBuilder.markClose(markPool.borrowStruct(forObject));
+        workListener.onClose(eventPool.borrowStruct(forObject));
     }
 
-    private boolean markIndex(Object index,boolean forObject){
+    private boolean onIndex(Object index, boolean forObject){
         if(breakOff) return false;
-        return breakOff = markBuilder.markIndex(markPool.borrowIndex(index,forObject));
+        return breakOff = workListener.onIndex(eventPool.borrowIndex(index,forObject));
     }
 
-    private void markNext(boolean hasNext){
+    private void onNext(boolean hasNext){
         if(breakOff) return;
-        markBuilder.markNext(markPool.borrowNext(hasNext));
+        workListener.onNext(eventPool.borrowNext(hasNext));
     }
 
     private void reset(boolean isBreaker){

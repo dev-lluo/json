@@ -3,7 +3,7 @@ package top.flyfire.json;
 /**
  * Created by shyy_work on 2016/6/16.
  */
-public interface Token {
+public interface JsonMark {
     char ARRAY_OPEN = '[',
     ARRAY_CLOSE = ']',
     OBJECT_OPEN = '{',

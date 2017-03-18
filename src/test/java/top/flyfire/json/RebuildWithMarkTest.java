@@ -16,11 +16,11 @@ public class RebuildWithMarkTest {
     @Test
     public void testSimpleParse(){
         ParseJavaObjectBuilder parseJavaObjectBuilder = new ParseJavaObjectBuilder();
-        new DeserializeWorker(jsonData,parseJavaObjectBuilder).parse();
+        new DeserializeWorker(jsonData,parseJavaObjectBuilder).work();
         Object object = parseJavaObjectBuilder.get();
         System.out.println(object);
         ParseJsonBuilder jsonBuilder2 = new ParseJsonBuilder();
-        new SerializeWorker(object,jsonBuilder2).parse();
+        new SerializeWorker(object,jsonBuilder2).work();
         System.out.println(jsonBuilder2.get());
     }
 

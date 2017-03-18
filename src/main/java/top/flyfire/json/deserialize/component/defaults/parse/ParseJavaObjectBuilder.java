@@ -17,29 +17,29 @@ public class ParseJavaObjectBuilder implements JsonWorkListener<Object> {
     private Object result;
 
     @Override
-    public void markOpen(JsonStructEvent mark) {
+    public void onOpen(JsonStructEvent mark) {
         data = mark.isForObject()?new ObjectData(new HashMap(), (StructValueData) data): new ArrayData(new ArrayList(), (StructValueData) data);
     }
 
     @Override
-    public void markClose(JsonStructEvent mark) {
+    public void onClose(JsonStructEvent mark) {
         dataRender();
     }
 
     @Override
-    public boolean markIndex(JsonIndexEvent mark) {
+    public boolean onIndex(JsonIndexEvent mark) {
         ((StructValueData)data).indexing(mark.getIndex());
         return false;
     }
 
     @Override
-    public void markValue(JsonValueEvent mark) {
+    public void onValue(JsonValueEvent mark) {
         data = new ValueData(mark.getValue(), (StructValueData) data);
         dataRender();
     }
 
     @Override
-    public void markNext(JsonNextEvent mark) {
+    public void onNext(JsonNextEvent mark) {
 
     }
 

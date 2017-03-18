@@ -22,7 +22,7 @@ public class Json {
 
     public static String format(String json){
         FormatBuilder formatBuilder = new FormatBuilder();
-        new DeserializeWorker(json,formatBuilder).parse();
+        new DeserializeWorker(json,formatBuilder).work();
         return formatBuilder.get();
     }
 
@@ -69,6 +69,6 @@ public class Json {
     }
 
     public static void exec(JsonWorker parser){
-        parser.parse();
+        parser.work();
     }
 }

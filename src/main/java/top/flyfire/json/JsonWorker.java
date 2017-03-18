@@ -5,6 +5,6 @@ package top.flyfire.json;
  */
 public interface JsonWorker {
 
-    void parse();
+    void work();
 
 }
