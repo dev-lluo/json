@@ -60,12 +60,12 @@ public class Json {
         return builder.get();
     }
 
-    public static void deserialize(String json, JsonWorkListener markBuilder){
-        Json.exec(new DeserializeWorker(json,markBuilder));
+    public static void deserialize(String json, JsonWorkListener workListener){
+        Json.exec(new DeserializeWorker(json,workListener));
     }
 
-    public static void serialize(Object object, JsonWorkListener markBuilder){
-        Json.exec(new SerializeWorker(object,markBuilder));
+    public static void serialize(Object object, JsonWorkListener workListener){
+        Json.exec(new SerializeWorker(object,workListener));
     }
 
     public static void exec(JsonWorker parser){
