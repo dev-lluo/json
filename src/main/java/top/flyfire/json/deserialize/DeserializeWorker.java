@@ -345,8 +345,8 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
     private class PrimitiveWorker implements JsonWorker {
         @Override
         public void work() {
-            tokenRead(JsonMark.NEXT, JsonMark.ARRAY_CLOSE);
-            onValue(false,false,false);
+            tokenRead();
+            onValue(hasWrapper,false,false);
             route.pop();
         }
     }
