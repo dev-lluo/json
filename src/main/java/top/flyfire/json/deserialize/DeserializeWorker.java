@@ -69,15 +69,6 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         }
     }
 
-    private boolean notIn(int c, int... tokens) {
-        for (int i = 0; i < tokens.length; i++) {
-            if (c == tokens[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     private boolean tokenRead(JsonMarker.MarkGroup endGroup) {
         char token = '\0';
