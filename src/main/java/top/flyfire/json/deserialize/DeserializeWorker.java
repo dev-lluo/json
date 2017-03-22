@@ -87,12 +87,20 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
             if (hasWrapper = (quoteWrapper > 0)) {
                 while (roll()) {
                     token = fetch();
+                    if(quoteWrapper==0){
+                        if(endGroup.exists(token = fetch())){
+                            break;
+                        }else if (JsonMarker.isInvisibleChar(token)){
+                            continue;
+                        }else{
+                            throw new UnexpectedTokenException(source,cursor);
+                        }
+                    }
                     if (escape == 0) {
                         if (token == JsonMark.ESCAPE) {
                             escape = 1;
-                        } else if ((token ^ quoteWrapper) == 0) {
+                        } else if (token == quoteWrapper) {
                             quoteWrapper = 0;
-                            break;
                         } else {
                             markCached.push(token);
                         }
@@ -121,12 +129,12 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                         escape = 0;
                     }
                 }
-                while (roll() && !endGroup.exists(token = fetch())) {
-                    if (JsonMarker.isInvisibleChar(token))
-                        continue;
-                    throw new UnexpectedTokenException(source,cursor);
+                validate:
+                {
+                    if (quoteWrapper != 0) {
+                        throw new UnexpectedEndTokenException(source);
+                    }
                 }
-                ;
             } else {
                 boolean notSkip = true;
                 markCached.push(token);
@@ -143,12 +151,6 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                         throw new UnexpectedTokenException(source,cursor);
                     }
                 }
-            }
-        }
-        validate:
-        {
-            if (quoteWrapper != 0) {
-                throw new UnexpectedEndTokenException(source);
             }
         }
         mark = markCached.toString();

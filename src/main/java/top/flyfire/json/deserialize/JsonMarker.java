@@ -41,22 +41,22 @@ public final class JsonMarker implements JsonMark {
 
     public final static MarkGroup ObjectGroup = new MarkGroup() {
         @Override
-        public boolean exists(char in) {
+        public final boolean exists(char in) {
             return isNext(in)||isObjectEnd(in);
         }
     },ObjectK2VGroup = new MarkGroup() {
         @Override
-        public boolean exists(char in) {
+        public final boolean exists(char in) {
             return isPrp2Val(in);
         }
     },ArrayGroup = new MarkGroup() {
         @Override
-        public boolean exists(char in) {
+        public final boolean exists(char in) {
             return isNext(in)||isArrayEnd(in);
         }
     },NoopGroup = new MarkGroup() {
         @Override
-        public boolean exists(char in) {
+        public final boolean exists(char in) {
             return false;
         }
     };
