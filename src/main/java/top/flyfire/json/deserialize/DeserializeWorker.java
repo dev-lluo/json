@@ -20,7 +20,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
 
     private JsonEventPool eventPool;
 
-    private  StringBuilder markCached;
+    private  CharCached markCached;
 
     private String mark;
 
@@ -43,7 +43,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         this.workListener = markBuilder;
         this.route = new JsonRoute();
         this.eventPool = new JsonEventPool(this.route);
-        this.markCached = new StringBuilder();
+        this.markCached = new CharCached();
         STRUCTEDPARSER = new ObjectWorker();
         INDEXEDPARSER = new ArrayWorker();
         PRIMITIVEPARSER = new PrimitiveWorker();
@@ -74,10 +74,10 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         char token = '\0';
         int quoteWrapper,
                 escape = 0; //0,1
-        if(null!=mark)markCached.delete(0, markCached.length());
+        if(null!=mark)markCached.clear();
         readFirst:
         {
-            for (token = fetch();JsonMarker.isInvisibleChar(token = fetch()); roll()) ;
+            for (;JsonMarker.isInvisibleChar(token = fetch()); roll()) ;
             if (token == JsonMark.DOUBLE_QUOTE || token == JsonMark.SINGLE_QUOTE) quoteWrapper = token;
             else if(endGroup.exists(token)) throw new UnexpectedTokenException(source,cursor);
             else quoteWrapper = 0;
@@ -94,29 +94,29 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                             quoteWrapper = 0;
                             break;
                         } else {
-                            markCached.append(token);
+                            markCached.push(token);
                         }
                     } else {
                         if (token == 't') {
-                            markCached.append('\t');
+                            markCached.push('\t');
                         } else if (token == 'r') {
-                            markCached.append('\r');
+                            markCached.push('\r');
                         } else if (token == 'n') {
-                            markCached.append('\n');
+                            markCached.push('\n');
                         } else if (token == 'f') {
-                            markCached.append('\f');
+                            markCached.push('\f');
                         } else if (token == 'b') {
-                            markCached.append('\b');
+                            markCached.push('\b');
                         } else if (token == '/') {
-                            markCached.append('/');
+                            markCached.push('/');
                         } else if (token == '\\') {
-                            markCached.append('\\');
+                            markCached.push('\\');
                         } else if (token == '"') {
-                            markCached.append('"');
+                            markCached.push('"');
                         } else if (token == '\'') {
-                            markCached.append('\'');
+                            markCached.push('\'');
                         } else {
-                            markCached.append(token);
+                            markCached.push(token);
                         }
                         escape = 0;
                     }
@@ -129,13 +129,13 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                 ;
             } else {
                 boolean notSkip = true;
-                markCached.append(token);
+                markCached.push(token);
                 while (roll() && !endGroup.exists(token = fetch())) {
                     if(notSkip) {
                         if(JsonMarker.isInvisibleChar(token)){
                             notSkip = false;
                         }else {
-                            markCached.append(token);
+                            markCached.push(token);
                         }
                     }else{
                         if(JsonMarker.isInvisibleChar(token))
