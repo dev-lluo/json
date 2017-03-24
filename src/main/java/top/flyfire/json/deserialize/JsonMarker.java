@@ -35,30 +35,32 @@ public final class JsonMarker implements JsonMark {
         return SPACE == token || TAB == token || RLINE == token || NLINE == token;
     }
 
-    interface MarkGroup {
-        boolean exists(char in);
+    public static boolean isQuote(char token){
+        return DOUBLE_QUOTE==token||SINGLE_QUOTE==token;
     }
 
-    public final static MarkGroup ObjectGroup = new MarkGroup() {
-        @Override
-        public final boolean exists(char in) {
-            return isNext(in)||isObjectEnd(in);
+    public static char escape(char token){
+        if (token == 't') {
+            return '\t';
+        } else if (token == 'r') {
+            return '\r';
+        } else if (token == 'n') {
+            return '\n';
+        } else if (token == 'f') {
+            return '\f';
+        } else if (token == 'b') {
+            return '\b';
+        } else if (token == '/') {
+            return '/';
+        } else if (token == '\\') {
+            return '\\';
+        } else if (token == '"') {
+            return '"';
+        } else if (token == '\'') {
+            return '\'';
+        } else {
+            return token;
         }
-    },ObjectK2VGroup = new MarkGroup() {
-        @Override
-        public final boolean exists(char in) {
-            return isPrp2Val(in);
-        }
-    },ArrayGroup = new MarkGroup() {
-        @Override
-        public final boolean exists(char in) {
-            return isNext(in)||isArrayEnd(in);
-        }
-    },NoopGroup = new MarkGroup() {
-        @Override
-        public final boolean exists(char in) {
-            return false;
-        }
-    };
+    }
 
 }

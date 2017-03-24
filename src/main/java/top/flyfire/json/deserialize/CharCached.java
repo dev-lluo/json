@@ -29,6 +29,13 @@ public final class CharCached {
         return this;
     }
 
+    public CharCached getCharsFrom(String source,int offset,int len){
+        ensureCapacityInternal(count + len);
+        source.getChars(offset,offset+len,value,count);
+        count+=len;
+        return this;
+    }
+
     public void clear(){
         this.count = 0;
     }

@@ -24,11 +24,11 @@ public class JsonRoute {
     }
 
     public int pushArrayIndex(int index){
-        return push(index,1);
+        return push(index,2);
     }
 
     public int pushObjectKey(String key){
-        return push(key,0);
+        return push(key,1);
     }
 
     private int push(Object nodeName,int token){
@@ -46,6 +46,10 @@ public class JsonRoute {
 
     public <T> T get(){
         return (T)caches[level-1];
+    }
+
+    public int getToken(){
+        return tokenCaches[level-1];
     }
 
     public int getLevel() {

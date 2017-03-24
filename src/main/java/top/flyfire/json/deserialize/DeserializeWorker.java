@@ -26,15 +26,19 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
 
     private boolean hasWrapper;
 
+    private char wrapperToken;
+
     private boolean breakOff;
 
     private int cursor, cursorBound, level;
 
-    private JsonWorker STRUCTEDPARSER;
+    private JsonWorker objectWorker;
 
-    private JsonWorker INDEXEDPARSER;
+    private JsonWorker arrayWoker;
 
-    private JsonWorker PRIMITIVEPARSER;
+    private JsonWorker primitiveWorker;
+
+    private JsonWorker primitiveWithQuoteWorker;
 
     public DeserializeWorker(String source, JsonWorkListener markBuilder) {
         this.source = source;
@@ -44,9 +48,10 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         this.route = new JsonRoute();
         this.eventPool = new JsonEventPool(this.route);
         this.markCached = new CharCached();
-        STRUCTEDPARSER = new ObjectWorker();
-        INDEXEDPARSER = new ArrayWorker();
-        PRIMITIVEPARSER = new PrimitiveWorker();
+        objectWorker = new ObjectWorker();
+        arrayWoker = new ArrayWorker();
+        primitiveWorker = new PrimitiveWorker();
+        primitiveWithQuoteWorker = new PrimitiveWithQuoteWorker();
     }
 
     @Override
@@ -58,103 +63,99 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
     @Override
     public JsonWorker call() {
         char dest = fetchIgnoreisInvisibleChar();//ignore invisible char before value
-        if (JsonMarker.isArrayStart(dest)) {
+        if(JsonMarker.isQuote(dest)){
             if (!roll()) throw new UnexpectedEndTokenException(this.source);
-            return INDEXEDPARSER;
+            wrapperToken = dest;
+            return primitiveWithQuoteWorker;
+        }else if (JsonMarker.isArrayStart(dest)) {
+            if (!roll()) throw new UnexpectedEndTokenException(this.source);
+            return arrayWoker;
         } else if (JsonMarker.isObjectStart(dest)) {
             if (!roll()) throw new UnexpectedEndTokenException(this.source);
-            return STRUCTEDPARSER;
+            return objectWorker;
         } else {
-            return PRIMITIVEPARSER;
+            return primitiveWorker;
         }
     }
 
 
-    private boolean tokenRead(JsonMarker.MarkGroup endGroup) {
-        char token = '\0';
-        int quoteWrapper,
-                escape = 0; //0,1
-        if(null!=mark)markCached.clear();
-        readFirst:
-        {
-            for (;JsonMarker.isInvisibleChar(token = fetch()); roll()) ;
-            if (token == JsonMark.DOUBLE_QUOTE || token == JsonMark.SINGLE_QUOTE) quoteWrapper = token;
-            else if(endGroup.exists(token)) throw new UnexpectedTokenException(source,cursor);
-            else quoteWrapper = 0;
-        }
-        read2End:
-        {
-            if (hasWrapper = (quoteWrapper > 0)) {
+    private void tokenReadWithQuote(MarkGroup endGroup){
+        char token;
+        int begin = cursor,end = cursor;
+        while (roll()){
+            token = fetch();
+            if (token == JsonMark.ESCAPE) {
+                roll();
+                markCached.clear();
+                markCached.getCharsFrom(source,begin,end-begin);
+                markCached.push(JsonMarker.escape(fetch()));
+                __tokenReadWithEscape(endGroup);
+                return;
+            } else if (token == wrapperToken) {
+                end = cursor;
+                wrapperToken = 0;
+                mark = source.substring(begin,end);
                 while (roll()) {
-                    token = fetch();
-                    if(quoteWrapper==0){
-                        if(endGroup.exists(token = fetch())){
-                            break;
-                        }else if (JsonMarker.isInvisibleChar(token)){
-                            continue;
-                        }else{
-                            throw new UnexpectedTokenException(source,cursor);
-                        }
-                    }
-                    if (escape == 0) {
-                        if (token == JsonMark.ESCAPE) {
-                            escape = 1;
-                        } else if (token == quoteWrapper) {
-                            quoteWrapper = 0;
-                        } else {
-                            markCached.push(token);
-                        }
-                    } else {
-                        if (token == 't') {
-                            markCached.push('\t');
-                        } else if (token == 'r') {
-                            markCached.push('\r');
-                        } else if (token == 'n') {
-                            markCached.push('\n');
-                        } else if (token == 'f') {
-                            markCached.push('\f');
-                        } else if (token == 'b') {
-                            markCached.push('\b');
-                        } else if (token == '/') {
-                            markCached.push('/');
-                        } else if (token == '\\') {
-                            markCached.push('\\');
-                        } else if (token == '"') {
-                            markCached.push('"');
-                        } else if (token == '\'') {
-                            markCached.push('\'');
-                        } else {
-                            markCached.push(token);
-                        }
-                        escape = 0;
-                    }
-                }
-                validate:
-                {
-                    if (quoteWrapper != 0) {
-                        throw new UnexpectedEndTokenException(source);
-                    }
-                }
-            } else {
-                boolean notSkip = true;
-                markCached.push(token);
-                while (roll() && !endGroup.exists(token = fetch())) {
-                    if(notSkip) {
-                        if(JsonMarker.isInvisibleChar(token)){
-                            notSkip = false;
-                        }else {
-                            markCached.push(token);
-                        }
+                    if(endGroup.exists(token = fetch())){
+                        break;
+                    }else if (JsonMarker.isInvisibleChar(token)){
+                        continue;
                     }else{
-                        if(JsonMarker.isInvisibleChar(token))
-                            continue ;
                         throw new UnexpectedTokenException(source,cursor);
                     }
                 }
+                return;
+            }
+        }
+        throw new UnexpectedEndTokenException(source);
+    }
+
+    private void __tokenReadWithEscape(MarkGroup endGroup){
+        char token;
+        while (roll()) {
+            token = fetch();
+            if (token == JsonMark.ESCAPE) {
+                roll();
+                markCached.push(JsonMarker.escape(fetch()));
+            } else if (token == wrapperToken) {
+                wrapperToken = 0;
+                mark = markCached.toString();
+                while (roll()) {
+                    if(endGroup.exists(token = fetch())){
+                        break;
+                    }else if (JsonMarker.isInvisibleChar(token)){
+                        continue;
+                    }else{
+                        throw new UnexpectedTokenException(source,cursor);
+                    }
+                }
+                return;
+            } else {
+                markCached.push(token);
+            }
+        }
+        throw new UnexpectedEndTokenException(source);
+    }
+
+    private void tokenRead(MarkGroup endGroup) {
+        char token = fetch();
+        if(null!=mark)markCached.clear();
+        boolean notSkip = true;
+        markCached.push(token);
+        while (roll() && !endGroup.exists(token = fetch())) {
+            if(notSkip) {
+                if(JsonMarker.isInvisibleChar(token)){
+                    notSkip = false;
+                }else {
+                    markCached.push(token);
+                }
+            }else{
+                if(JsonMarker.isInvisibleChar(token))
+                    continue ;
+                throw new UnexpectedTokenException(source,cursor);
             }
         }
         mark = markCached.toString();
-        return hasWrapper;
     }
 
     private char fetch() {
@@ -173,13 +174,12 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         return ++cursor < cursorBound;
     }
 
-    private class ObjectWorker implements JsonWorker, Enumeration, JsonMaster {
+    private class ObjectWorker implements JsonWorker, Enumeration {
 
         private JsonWorker PRIMITIVEPARSER;
 
         public ObjectWorker() {
             super();
-            PRIMITIVEPARSER = new ObjectPrimitiveWorker();
         }
 
         @Override
@@ -189,7 +189,13 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                 do {
                     key:
                     {
-                        tokenRead(JsonMarker.ObjectK2VGroup);
+                        wrapperToken = fetchIgnoreisInvisibleChar();
+                        if(JsonMarker.isQuote(wrapperToken)) {
+                            if (!roll()) throw new UnexpectedEndTokenException(source);
+                            tokenReadWithQuote(ObjectK2VGroup);
+                        }else{
+                            tokenRead(ObjectK2VGroup);
+                        }
                         route.pushObjectKey(mark);
                         isBreaker = onIndex(mark,true);
                         roll();
@@ -239,28 +245,14 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
             }
         }
 
-        @Override
-        public JsonWorker call() {
-            char dest;
-            if (JsonMarker.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
-                if (!roll()) throw new UnexpectedEndTokenException(source);
-                return INDEXEDPARSER;
-            } else if (JsonMarker.isObjectStart(dest)) {
-                if (!roll()) throw new UnexpectedEndTokenException(source);
-                return STRUCTEDPARSER;
-            } else {
-                return PRIMITIVEPARSER;
-            }
-        }
     }
 
-    private class ArrayWorker implements JsonWorker, Enumeration, JsonMaster {
+    private class ArrayWorker implements JsonWorker, Enumeration {
 
         private JsonWorker PRIMITIVEPARSER;
 
         public ArrayWorker() {
             super();
-            PRIMITIVEPARSER = new IndexedPrimitiveWorker();
         }
 
         @Override
@@ -319,45 +311,23 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                 return true;
             }
         }
-
-        @Override
-        public JsonWorker call() {
-            char dest;
-            if (JsonMarker.isArrayStart(dest = fetchIgnoreisInvisibleChar())) {//ignore invisible char before value
-                if (!roll()) throw new UnexpectedEndTokenException(source);
-                return INDEXEDPARSER;
-            } else if (JsonMarker.isObjectStart(dest)) {
-                if (!roll()) throw new UnexpectedEndTokenException(source);
-                return STRUCTEDPARSER;
-            } else {
-                return PRIMITIVEPARSER;
-            }
-        }
     }
 
     private class PrimitiveWorker implements JsonWorker {
         @Override
         public void work() {
-            tokenRead(JsonMarker.NoopGroup);
-            onValue(hasWrapper,false,false);
+            tokenRead(markGroups[route.getToken()]);
+            onValue(false,false,false);
             route.pop();
         }
     }
 
-    private class ObjectPrimitiveWorker implements JsonWorker {
-        @Override
-        public void work() {
-            tokenRead(JsonMarker.ObjectGroup);
-            onValue(hasWrapper,false,false);
-            route.pop();
-        }
-    }
+    private class PrimitiveWithQuoteWorker implements JsonWorker {
 
-    private class IndexedPrimitiveWorker implements JsonWorker {
         @Override
         public void work() {
-            tokenRead(JsonMarker.ArrayGroup);
-            onValue(hasWrapper,false,false);
+            tokenReadWithQuote(markGroups[route.getToken()]);
+            onValue(true,false,false);
             route.pop();
         }
     }
@@ -392,4 +362,35 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
             breakOff = false;
         }
     }
+
+    interface MarkGroup {
+        boolean exists(char in);
+    }
+
+    public final static MarkGroup ObjectGroup = new MarkGroup() {
+        @Override
+        public final boolean exists(char in) {
+            return JsonMarker.isNext(in)||JsonMarker.isObjectEnd(in);
+        }
+    },ObjectK2VGroup = new MarkGroup() {
+        @Override
+        public final boolean exists(char in) {
+            return JsonMarker.isPrp2Val(in);
+        }
+    },ArrayGroup = new MarkGroup() {
+        @Override
+        public final boolean exists(char in) {
+            return JsonMarker.isNext(in)||JsonMarker.isArrayEnd(in);
+        }
+    },NoopGroup = new MarkGroup() {
+        @Override
+        public final boolean exists(char in) {
+            return false;
+        }
+    };
+
+    private final static MarkGroup[] markGroups = new MarkGroup[]{
+      NoopGroup,ObjectGroup,ArrayGroup
+    };
+
 }

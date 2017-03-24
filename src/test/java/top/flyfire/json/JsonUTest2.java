@@ -926,7 +926,7 @@ public class JsonUTest2 {
             "\n" +
             "]";
 
-    int testCount = 1000000;
+    int testCount = 100000;
 
     @Test
     public void testFlyFireJson() {
@@ -937,7 +937,7 @@ public class JsonUTest2 {
             @Override
             public void exec() {
                 List<Province> list = (List)top.flyfire.json.Json.deserialize(jsonData, type);
-                top.flyfire.json.Json.serialize(list);
+//                top.flyfire.json.Json.serialize(list);
             }
         });
 
