@@ -12,37 +12,35 @@ import top.flyfire.json.event.JsonEventPool;
 @SuppressWarnings("all")
 public class DeserializeWorker implements JsonMaster,JsonWorker {
 
-    private String source;
+    protected String source;
 
-    private JsonWorkListener workListener;
+    protected JsonWorkListener workListener;
 
-    private JsonRoute route;
+    protected JsonRoute route;
 
-    private JsonEventPool eventPool;
+    protected JsonEventPool eventPool;
 
-    private  CharCached markCached;
+    protected  CharCached markCached;
 
-    private String mark;
+    protected String mark;
 
-    private boolean hasWrapper;
+    protected char wrapperToken;
 
-    private char wrapperToken;
+    protected boolean breakOff;
 
-    private boolean breakOff;
+    protected int cursor, cursorBound;
 
-    private int cursor, cursorBound, level;
+    protected JsonWorker objectWorker,
 
-    private JsonWorker objectWorker;
+     arrayWoker,
 
-    private JsonWorker arrayWoker;
+     primitiveWorker,
 
-    private JsonWorker primitiveWorker;
-
-    private JsonWorker primitiveWithQuoteWorker;
+     primitiveWithQuoteWorker;
 
     public DeserializeWorker(String source, JsonWorkListener markBuilder) {
         this.source = source;
-        this.cursor = this.level = 0;
+        this.cursor = 0;
         this.cursorBound = source.length();
         this.workListener = markBuilder;
         this.route = new JsonRoute();
@@ -79,7 +77,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
     }
 
 
-    private void tokenReadWithQuote(MarkGroup endGroup){
+    protected void tokenReadWithQuote(MarkGroup endGroup){
         char token;
         int begin = cursor,end = cursor;
         while (roll()){
@@ -137,7 +135,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         throw new UnexpectedEndTokenException(source);
     }
 
-    private void tokenRead(MarkGroup endGroup) {
+    protected void tokenRead(MarkGroup endGroup) {
         char token = fetch();
         if(null!=mark)markCached.clear();
         boolean notSkip = true;
@@ -158,11 +156,11 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         mark = markCached.toString();
     }
 
-    private char fetch() {
+    protected char fetch() {
         return source.charAt(cursor);
     }
 
-    public char fetchIgnoreisInvisibleChar() {
+    protected char fetchIgnoreisInvisibleChar() {
         char dest;
         while (JsonMarker.isInvisibleChar(dest = source.charAt(cursor))) {
             if (!roll()) throw new UnexpectedTokenException(source,cursor);
@@ -170,7 +168,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         return dest;
     }
 
-    private boolean roll() {
+    protected boolean roll() {
         return ++cursor < cursorBound;
     }
 
@@ -189,13 +187,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                 do {
                     key:
                     {
-                        wrapperToken = fetchIgnoreisInvisibleChar();
-                        if(JsonMarker.isQuote(wrapperToken)) {
-                            if (!roll()) throw new UnexpectedEndTokenException(source);
-                            tokenReadWithQuote(ObjectK2VGroup);
-                        }else{
-                            tokenRead(ObjectK2VGroup);
-                        }
+                        readKey();
                         route.pushObjectKey(mark);
                         isBreaker = onIndex(mark,true);
                         roll();
@@ -242,6 +234,16 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
                 return false;
             } else {
                 return true;
+            }
+        }
+
+        private void readKey(){
+            wrapperToken = fetchIgnoreisInvisibleChar();
+            if(JsonMarker.isQuote(wrapperToken)) {
+                if (!roll()) throw new UnexpectedEndTokenException(source);
+                tokenReadWithQuote(ObjectK2VGroup);
+            }else{
+                tokenRead(ObjectK2VGroup);
             }
         }
 
@@ -332,32 +334,32 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         }
     }
 
-    private void onValue(boolean hasWrapper, boolean isNull, boolean isUndefined){
+    protected void onValue(boolean hasWrapper, boolean isNull, boolean isUndefined){
         if(breakOff) return;
         workListener.onValue(eventPool.borrowValue(mark,isNull,isUndefined,hasWrapper));
     }
 
-    private void onOpen(boolean forObject){
+    protected void onOpen(boolean forObject){
         if(breakOff) return;
         workListener.onOpen(eventPool.borrowStruct(forObject));
     }
 
-    private void onClose(boolean forObject){
+    protected void onClose(boolean forObject){
         if(breakOff) return;
         workListener.onClose(eventPool.borrowStruct(forObject));
     }
 
-    private boolean onIndex(Object index, boolean forObject){
+    protected boolean onIndex(Object index, boolean forObject){
         if(breakOff) return false;
         return breakOff = workListener.onIndex(eventPool.borrowIndex(index,forObject));
     }
 
-    private void onNext(boolean hasNext){
+    protected void onNext(boolean hasNext){
         if(breakOff) return;
         workListener.onNext(eventPool.borrowNext(hasNext));
     }
 
-    private void reset(boolean isBreaker){
+    protected void reset(boolean isBreaker){
         if(isBreaker){
             breakOff = false;
         }
@@ -367,7 +369,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         boolean exists(char in);
     }
 
-    public final static MarkGroup ObjectGroup = new MarkGroup() {
+    protected final static MarkGroup ObjectGroup = new MarkGroup() {
         @Override
         public final boolean exists(char in) {
             return JsonMarker.isNext(in)||JsonMarker.isObjectEnd(in);
@@ -389,7 +391,7 @@ public class DeserializeWorker implements JsonMaster,JsonWorker {
         }
     };
 
-    private final static MarkGroup[] markGroups = new MarkGroup[]{
+    protected final static MarkGroup[] markGroups = new MarkGroup[]{
       NoopGroup,ObjectGroup,ArrayGroup
     };
 
